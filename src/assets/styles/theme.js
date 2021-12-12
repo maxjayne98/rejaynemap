@@ -6,10 +6,9 @@ export const GlobalStyles = createGlobalStyle`
 
   body {
     background: ${({ theme }) => {
-      return theme.body;
-    }};
+    return theme.body;
+  }};
     transition: background 0.2s ease-in, color 0.2s ease-in;
-    direction:rtl;
   }
   html { font-size: 62.5%; }
 

@@ -7,7 +7,7 @@ const Home: React.FC = () => {
   return (
     <>
       <HomeContainer>
-        salam
+        <span>salam</span>
       </HomeContainer>
     </>
   );

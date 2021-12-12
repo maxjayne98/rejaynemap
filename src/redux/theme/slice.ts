@@ -9,7 +9,7 @@ const themePallete: { [key: string]: ColorPallete } = {
 };
 
 const initialState: themeState = {
-  theme: themePallete[get<string>("theme") || "dark"],
+  theme: themePallete[get<string>("theme") || "light"],
 };
 
 interface themeState {
