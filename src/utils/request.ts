@@ -1,19 +1,16 @@
 import axios from "axios";
 import { get, set } from "local-storage";
 
-const request = axios.create({
-  baseURL: process.env.REACT_APP_API_URL as string,
+export const request = axios.create({
   timeout: Number(process.env.REACT_APP_API_TIMEOUT),
 });
 
-const jwtToken =
-  "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJMb2dobWUiLCJpYXQiOjE2Mjk4MzQ3MDEsInN1YiI6IkF1dGhlbnRpY2F0aW9uIiwiZXhwIjoxNjI5OTIxMTAxLCJFbWFpbCI6ImJrQG1laHJhYi5jb20ifQ.OOm35X8kuDm239hEiIpwcN_KKvU-ffhcFjbMXdBNm0Y";
-request.defaults.headers.post["Content-Type"] =
-  "application/x-www-form-urlencoded";
+// request.defaults.headers.post["Content-Type"] =
+//   "application/x-www-form-urlencoded";
 
-axios.defaults.headers.common["Authorization"] = `Bearer ${
-  get("jwtToken") || jwtToken
-}`;
+// axios.defaults.headers.common["Authorization"] = `Bearer ${
+//   get("jwtToken") || jwtToken
+// }`;
 
 request.interceptors.request.use(
   (config) => {
@@ -35,4 +32,4 @@ request.interceptors.request.use(
 //     return Promise.reject(error);
 //   }
 // );
-export default request;
+

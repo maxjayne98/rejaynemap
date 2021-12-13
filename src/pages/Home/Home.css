@@ -1,0 +1,16 @@
+.marker {
+    background-image: url("./marker.svg");
+    background-size: cover;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    background-color: red;
+}
+.map-container {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
