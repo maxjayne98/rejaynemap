@@ -11,6 +11,9 @@ export const GlobalStyles = createGlobalStyle`
     transition: background 0.2s ease-in, color 0.2s ease-in;
   }
   html { font-size: 62.5%; }
+  .mapboxgl-popup-close-button{
+    display:none;
+  }
 
 `;
 export const lightTheme = {

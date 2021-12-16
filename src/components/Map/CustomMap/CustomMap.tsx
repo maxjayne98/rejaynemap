@@ -16,11 +16,7 @@ const aqicnURL = (url: string) => `${aqicnBaseURL}${url}`
 mapboxgl.accessToken = mapBoxToken
 
 
-const Marker = ({ id }: { id: string | number }) => <div id={`marker-${id}`} className="marker" />;
-
-
-
-const Home: React.FC = () => {
+const CustomMap: React.FC = () => {
     const dispatch = useAppDispatch();
     const mapContainer = useRef<HTMLDivElement>();
     const map = useRef<Map | null>(null);
@@ -29,6 +25,10 @@ const Home: React.FC = () => {
     const [zoom, setZoom] = useState(9);
     const [data, setData] = useState<Array<FeatureCollection>>([])
     const [loading, setLoading] = useState(false)
+
+    const [stationData, setStationData] = useState<any>([])
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+
     const popUpRef = useRef(new AnimatedPopup({
         offset: 25,
         openingAnimation: {
@@ -39,9 +39,7 @@ const Home: React.FC = () => {
             duration: 300,
             easing: 'easeInBack'
         }
-    }).setText(
-        'Construction on the Washington Monument began in 1848.'
-    ));
+    }));
 
     const [mapLoadded, setMapLoadded] = useState(false)
 
@@ -54,6 +52,18 @@ const Home: React.FC = () => {
             console.log("This is error :: ", error)
         }
     }
+    const fetchStationDetail = async () => {
+        try {
+            setIsLoading(true)
+            const { data } = await request.get(aqicnURL("/map/search"))
+            console.log("fetch api search this is data :: ", data)
+            setIsLoading(false)
+        } catch (error) {
+            setIsLoading(false)
+            console.log("This is error :: ", error)
+        }
+    }
+
 
     useEffect(() => {
         fetchStationDetails()
@@ -114,16 +124,45 @@ const Home: React.FC = () => {
                 });
             }
             if (map.current instanceof Map) {
-                map.current.on('click', 'random-points-layer', (e: any) => {
+                map.current.on('mouseenter', 'random-points-layer', async (e: any) => {
                     if (e.features.length) {
                         const feature: FeatureCollection = e.features[0];
                         const popupNode = document.createElement('div');
                         ReactDOM.render(<CustomPopUp feature={feature} />, popupNode);
+                        const coordinates = e.features[0].geometry.coordinates.slice();
+                        const description = e.features[0].properties.description;
+
+
+                        // popUpRef.current.setLngLat(coordinates).setHTML('<div>loadign</div>').addTo(map.current as Map);
+                        // popUpRef.current.setLngLat(coordinates).setDOMContent(popupNode).addTo(map.current as Map);
+
+                        // Ensure that if the map is zoomed out such that multiple
+                        // copies of the feature are visible, the popup appears
+                        // over the copy being pointed to.
+                        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                        }
+                        // console.log("after fetching !!")
+                        // setTimeout(() => {
+                        //     // popUpRef.current.setLngLat(coordinates).setHTML('<div>loaded</div>').addTo(map.current as Map);
+                        //     console.log("triggger !!")
+                        //     popUpRef.current.setLngLat(coordinates).setDOMContent(popupNode).addTo(map.current as Map);
+
+                        // }, 1000)
+                        // popUpRef.current.setLngLat(coordinates).setHTML('<div>salam</div>').addTo(map.current as Map);
                         try {
-                            popUpRef.current.setLngLat(feature.geometry.coordinates).setDOMContent(popupNode).addTo(map.current as Map);
+                            popUpRef.current.setLngLat(coordinates).setDOMContent(popupNode).addTo(map.current as Map);
                         } catch (error) {
                             console.log("this is errrrrrror :: ", error)
                         }
+                    }
+                });
+
+                map.current.on('mouseleave', 'random-points-layer', (e: any) => {
+                    try {
+                        popUpRef.current.remove()
+                    } catch (error) {
+                        console.log("this is errrrrrror :: ", error)
                     }
                 });
             }
@@ -134,10 +173,28 @@ const Home: React.FC = () => {
             }
         }
     }, []);
-
+    const [check, setCheck] = useState(false)
+    const [poolingELid, setPoolinELid] = useState<NodeJS.Timer>()
+    const checkBoxButtonOnChange = (event: any) => {
+        console.log("this is checkBox value", event?.target.value)
+        setCheck(!check)
+    }
+    useEffect(() => {
+        if (check) {
+            const id: NodeJS.Timer = setInterval(() => {
+                fetchStationDetails()
+            }, 5000)
+            setPoolinELid(id)
+        } else {
+            clearInterval(poolingELid as any)
+        }
+    }, [check])
     return (
-        <div ref={mapContainer as React.RefObject<HTMLDivElement>} style={{ height: "100vh" }} />
+        <>
+            <input type="checkbox" checked={check} onChange={checkBoxButtonOnChange} />
+            <div ref={mapContainer as React.RefObject<HTMLDivElement>} style={{ height: "100vh" }} />
+        </>
     );
 };
 
-export default Home;
+export default CustomMap;
