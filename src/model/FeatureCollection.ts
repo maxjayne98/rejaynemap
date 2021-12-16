@@ -8,7 +8,8 @@ export interface FeatureCollection {
     properties: {
         id: Number
         name: string
-        description: string
+        aqi: Number
+        description?: string
     }
 
 

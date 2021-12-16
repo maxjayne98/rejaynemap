@@ -3,12 +3,12 @@ import { HomeContainer } from "./Elements";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import mapboxgl, { Map, GeoJSONSource, LngLatLike } from 'mapbox-gl'
 import { request } from '../../utils'
-import './Home.css'
 import ReactDOM from "react-dom";
-import { StationsResponse, FeatureCollection } from "../../model";
+import { FeatureCollection } from "../../model";
 import AnimatedPopup from './AnimatedPopUp'
-import fetchFakeData from "./fakeData";
-import CustomPopUp from './PopUp'
+import CustomPopUp from '../../components/Map/CustomPopup'
+import { mapStationsDataToGeoJSON, mapDataToGeoJSONObject } from "../../utils";
+import './Home.css'
 
 const mapBoxToken = process.env.REACT_APP_MAP_BOX_ACCESS_TOKEN as string;
 const aqicnBaseURL = process.env.REACT_APP_AQICN_API_URL as string
@@ -50,21 +50,7 @@ const Home: React.FC = () => {
   const fetchStationDetails = async () => {
     try {
       const { data } = await request.get(aqicnURL("/map/bounds"))
-      setData(data.data.map(({ lon, lat, uid, station, aqi }: StationsResponse) => {
-        return {
-          type: 'Feature',
-          geometry: {
-            type: 'Point',
-            coordinates: [lon, lat],
-          },
-          properties: {
-            id: uid,
-            name: station.name,
-            lastUpdate: station.time,
-            aqi: Number(aqi)
-          },
-        }
-      }))
+      setData(mapStationsDataToGeoJSON(data.data))
       console.log("fetch api this is data :: ", data)
     } catch (error) {
       console.log("This is error :: ", error)
@@ -90,13 +76,7 @@ const Home: React.FC = () => {
         const { lng, lat } = map.current.getCenter();
         if (map.current.getSource) {
           const getSource: GeoJSONSource = map.current.getSource('random-points-data') as GeoJSONSource
-          const featureData =
-          {
-            "type": "FeatureCollection",
-            "features": data
-          }
-          console.log("this is features ::: ", data)
-          getSource.setData(featureData as any);
+          getSource.setData(mapDataToGeoJSONObject(data) as any);
           // map.current.setCenter(data[0].geometry.coordinates)
           map.current.flyTo({
             center: data[0].geometry.coordinates
@@ -122,10 +102,8 @@ const Home: React.FC = () => {
       if (map.current instanceof Map) {
         map.current.addSource('random-points-data', {
           type: 'geojson',
-          data: {
-            type: 'FeatureCollection',
-            features: [],
-          },
+          //REFACTOR CORRECT TYPE
+          data: mapDataToGeoJSONObject([]) as any
         });
         setMapLoadded(true)
       }

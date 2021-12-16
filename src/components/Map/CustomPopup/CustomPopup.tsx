@@ -1,11 +1,11 @@
-import { FeatureCollection } from "../../model";
+import { FeatureCollection } from "../../../model";
 
 type Props = {
     feature: FeatureCollection
 };
 
 
-const CustomPopUp: React.FC<Props> = ({ feature }): JSX.Element => {
+const CustomPopup: React.FC<Props> = ({ feature }): JSX.Element => {
     // const { id, name, description } = feature.properties;
     console.log("this is feature :: ", feature)
     return (
@@ -17,4 +17,4 @@ const CustomPopUp: React.FC<Props> = ({ feature }): JSX.Element => {
     );
 };
 
-export default CustomPopUp
+export default CustomPopup

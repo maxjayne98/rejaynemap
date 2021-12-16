@@ -3,7 +3,7 @@ export interface Station {
     time: Date;
 }
 
-export interface StationsResponse {
+export interface StationResponse {
     lat: number;
     lon: number;
     uid: number;
