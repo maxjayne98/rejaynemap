@@ -62,34 +62,23 @@ const Home: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    if (Array.isArray(data)) {
-      // data.forEach(({ lon, lat, uid }: StationsResponse) => {
-      //   if (map && map.current) {
-      //     const markerNode = document.createElement('div');
-      //     ReactDOM.render(<Marker id={uid} />, markerNode);
-      //     new mapboxgl.Marker(markerNode)
-      //       .setLngLat([lon, lat])
-      //       .addTo(map.current);
-      //   }
-      // })
-      if (map.current instanceof Map && mapLoadded) {
-        const { lng, lat } = map.current.getCenter();
-        if (map.current.getSource) {
-          const getSource: GeoJSONSource = map.current.getSource('random-points-data') as GeoJSONSource
-          getSource.setData(mapDataToGeoJSONObject(data) as any);
-          // map.current.setCenter(data[0].geometry.coordinates)
-          map.current.flyTo({
-            center: data[0].geometry.coordinates
-          });
+    if (map.current instanceof Map && mapLoadded) {
+      const { lng, lat } = map.current.getCenter();
+      if (map.current.getSource) {
+        const getSource: GeoJSONSource = map.current.getSource('random-points-data') as GeoJSONSource
+        getSource.setData(mapDataToGeoJSONObject(data) as any);
+        // map.current.setCenter(data[0].geometry.coordinates)
+        map.current.flyTo({
+          center: data[0].geometry.coordinates
+        });
 
 
-        }
       }
     }
   }, [data, mapLoadded])
 
   useEffect(() => {
-    if (map.current) return; // initialize map only once
+    if (map.current) return;
     map.current = new mapboxgl.Map({
       container: mapContainer.current || '',
       style: 'mapbox://styles/mapbox/streets-v11',
@@ -98,7 +87,6 @@ const Home: React.FC = () => {
     });
     map.current && map.current.addControl && map.current.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
     map.current.on('load', () => {
-      // add the data source for new a feature collection with no features
       if (map.current instanceof Map) {
         map.current.addSource('random-points-data', {
           type: 'geojson',
@@ -107,22 +95,12 @@ const Home: React.FC = () => {
         });
         setMapLoadded(true)
       }
-      // now add the layer, and reference the data source above by name
       if (map.current instanceof Map) {
         map.current.addLayer({
           id: 'random-points-layer',
           source: 'random-points-data',
           type: 'circle',
           'paint': {
-            // Make circles larger as the user zooms from z12 to z22.
-            // 'circle-radius': {
-            //   'base': 1.75,
-            //   'stops': [
-            //     [12, 2],
-            //     [22, 180]
-            //   ]
-            // },
-            // Color circles by ethnicity, using a `match` expression.
             'circle-color': {
               'property': 'aqi',
               'stops': [
@@ -141,10 +119,8 @@ const Home: React.FC = () => {
         map.current.on('click', 'random-points-layer', (e: any) => {
           if (e.features.length) {
             const feature: FeatureCollection = e.features[0];
-            // create popup node
             const popupNode = document.createElement('div');
             ReactDOM.render(<CustomPopUp feature={feature} />, popupNode);
-            // set popup on map
             try {
               popUpRef.current.setLngLat(feature.geometry.coordinates).setDOMContent(popupNode).addTo(map.current as Map);
             } catch (error) {
@@ -156,43 +132,10 @@ const Home: React.FC = () => {
     });
     return () => {
       if (map.current && map.current.remove) {
-        // REFACTOR :: Write shorthand form !!
         map.current.remove()
       }
     }
   }, []);
-
-  useEffect(() => {
-    if (map && map.current) return
-    else if (map.current instanceof Map) {
-      // map.current.on('load', () => {
-      //   // add the data source for new a feature collection with no features
-      //   console.log("call me on load !!")
-      //   if (map.current instanceof Map) {
-      //     map.current.addSource('random-points-data', {
-      //       type: 'geojson',
-      //       data: {
-      //         type: 'FeatureCollection',
-      //         features: [],
-      //       },
-      //     });
-      //   }
-      //   // now add the layer, and reference the data source above by name
-      //   if (map.current instanceof Map)
-      //     map.current.addLayer({
-      //       id: 'random-points-layer',
-      //       source: 'random-points-data',
-      //       type: 'symbol',
-      //       layout: {
-      //         // full list of icons here: https://labs.mapbox.com/maki-icons
-      //         'icon-image': 'bakery-15', // this will put little croissants on our map
-      //         'icon-padding': 0,
-      //         'icon-allow-overlap': true,
-      //       },
-      //     });
-      // });
-    }
-  })
 
   return (
     <>
