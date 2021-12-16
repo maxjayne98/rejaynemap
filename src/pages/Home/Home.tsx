@@ -6,14 +6,15 @@ import { request } from '../../utils'
 import './Home.css'
 import ReactDOM from "react-dom";
 import { StationsResponse, FeatureCollection } from "../../model";
+import AnimatedPopup from './AnimatedPopUp'
 import fetchFakeData from "./fakeData";
-import PopUp from './PopUp'
+import CustomPopUp from './PopUp'
 
 const mapBoxToken = process.env.REACT_APP_MAP_BOX_ACCESS_TOKEN as string;
 const aqicnBaseURL = process.env.REACT_APP_AQICN_API_URL as string
 const aqicnAccessToken = process.env.REACT_APP_AQICN_ACCESS_TOKEN
 
-const aqicnURL = (url: string) => `${aqicnBaseURL}${url}&token=${aqicnAccessToken}`
+const aqicnURL = (url: string) => `${aqicnBaseURL}${url}`
 mapboxgl.accessToken = mapBoxToken
 
 
@@ -30,13 +31,26 @@ const Home: React.FC = () => {
   const [zoom, setZoom] = useState(9);
   const [data, setData] = useState<Array<FeatureCollection>>([])
   const [loading, setLoading] = useState(false)
-  const popUpRef = useRef(new mapboxgl.Popup({ offset: 15 }).setHTML());
+  const popUpRef = useRef(new AnimatedPopup({
+    offset: 25,
+    openingAnimation: {
+      duration: 1000,
+      easing: 'easeOutElastic'
+    },
+    closingAnimation: {
+      duration: 300,
+      easing: 'easeInBack'
+    }
+  }).setText(
+    'Construction on the Washington Monument began in 1848.'
+  ));
+
   const [mapLoadded, setMapLoadded] = useState(false)
 
   const fetchStationDetails = async () => {
     try {
-      const { data } = await request.get(aqicnURL("/map/bounds/?latlng=39.379436,116.091230,40.235643,116.784382"))
-      setData(data.data.map(({ lon, lat, uid }: StationsResponse) => {
+      const { data } = await request.get(aqicnURL("/map/bounds"))
+      setData(data.data.map(({ lon, lat, uid, station, aqi }: StationsResponse) => {
         return {
           type: 'Feature',
           geometry: {
@@ -45,12 +59,13 @@ const Home: React.FC = () => {
           },
           properties: {
             id: uid,
-            name: `Random Point #${uid}`,
-            description: `description for Random Point #${uid}`,
+            name: station.name,
+            lastUpdate: station.time,
+            aqi: Number(aqi)
           },
         }
       }))
-      console.log("this is data :: ", data.data)
+      console.log("fetch api this is data :: ", data)
     } catch (error) {
       console.log("This is error :: ", error)
     }
@@ -73,10 +88,6 @@ const Home: React.FC = () => {
       // })
       if (map.current instanceof Map && mapLoadded) {
         const { lng, lat } = map.current.getCenter();
-        // fetch new data
-
-        // update "random-points-data" source with new data
-        // all layers that consume the "random-points-data" data source will be updated automatically
         if (map.current.getSource) {
           const getSource: GeoJSONSource = map.current.getSource('random-points-data') as GeoJSONSource
           const featureData =
@@ -84,9 +95,13 @@ const Home: React.FC = () => {
             "type": "FeatureCollection",
             "features": data
           }
-
-          console.log(map.current.getSource('random-points-data'), data as any)
+          console.log("this is features ::: ", data)
           getSource.setData(featureData as any);
+          // map.current.setCenter(data[0].geometry.coordinates)
+          map.current.flyTo({
+            center: data[0].geometry.coordinates
+          });
+
 
         }
       }
@@ -104,9 +119,7 @@ const Home: React.FC = () => {
     map.current && map.current.addControl && map.current.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
     map.current.on('load', () => {
       // add the data source for new a feature collection with no features
-      console.log("call me on load !!")
       if (map.current instanceof Map) {
-        console.log("call me on source !!")
         map.current.addSource('random-points-data', {
           type: 'geojson',
           data: {
@@ -118,17 +131,32 @@ const Home: React.FC = () => {
       }
       // now add the layer, and reference the data source above by name
       if (map.current instanceof Map) {
-        console.log("call me on layer !!")
         map.current.addLayer({
           id: 'random-points-layer',
           source: 'random-points-data',
-          type: 'symbol',
-          layout: {
-            // full list of icons here: https://labs.mapbox.com/maki-icons
-            'icon-image': 'bakery-15', // this will put little croissants on our map
-            'icon-padding': 0,
-            'icon-allow-overlap': true,
-          },
+          type: 'circle',
+          'paint': {
+            // Make circles larger as the user zooms from z12 to z22.
+            // 'circle-radius': {
+            //   'base': 1.75,
+            //   'stops': [
+            //     [12, 2],
+            //     [22, 180]
+            //   ]
+            // },
+            // Color circles by ethnicity, using a `match` expression.
+            'circle-color': {
+              'property': 'aqi',
+              'stops': [
+                [0, '#f1f075'],
+                [30, '#e55e5e'],
+                [50, '#355e5e'],
+                [70, '#255e5e'],
+                [90, '#e54e5e'],
+                [100, '#e55e0e'],
+              ]
+            }
+          }
         });
       }
       if (map.current instanceof Map) {
@@ -137,11 +165,9 @@ const Home: React.FC = () => {
             const feature: FeatureCollection = e.features[0];
             // create popup node
             const popupNode = document.createElement('div');
-            const popupProps = { feature }
-            ReactDOM.render(<div></div>, popupNode);
+            ReactDOM.render(<CustomPopUp feature={feature} />, popupNode);
             // set popup on map
             try {
-              console.log(feature.geometry.coordinates)
               popUpRef.current.setLngLat(feature.geometry.coordinates).setDOMContent(popupNode).addTo(map.current as Map);
             } catch (error) {
               console.log("this is errrrrrror :: ", error)

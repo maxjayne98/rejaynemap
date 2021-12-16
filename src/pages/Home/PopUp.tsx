@@ -1,7 +1,13 @@
 import { FeatureCollection } from "../../model";
 
-const PopUp = () => {
+type Props = {
+    feature: FeatureCollection
+};
+
+
+const CustomPopUp: React.FC<Props> = ({ feature }): JSX.Element => {
     // const { id, name, description } = feature.properties;
+    console.log("this is feature :: ", feature)
     return (
         <div id={`popup-${Math.random}`}>
             {/* <h3>{name}</h3> */}
@@ -11,4 +17,4 @@ const PopUp = () => {
     );
 };
 
-export default PopUp
+export default CustomPopUp
