@@ -19,8 +19,8 @@ const airQualitySensorSlice = createSlice({
       state.sensorsDetail = action.payload;
     },
     updateSensorDetail: (state, action) => {
-      state.sensorsDetail[action.payload.sensorName] =
-        action.payload.SensorDetail;
+      state.sensorsDetail[action.payload.sensorName].data =
+        action.payload.sensorData;
     },
   },
 });

@@ -13,19 +13,28 @@ import AnimatedPopup from "components/Map/AnimatedPopup/";
 import CustomPopUp from "components/Map/CustomPopup";
 import SwitchButton from "components/ToolBox/SwitchButton";
 import FloatingMenu from "components/ToolBox/FloatingMenu";
+
 import {
   request,
   mapStationsDataToGeoJSON,
   mapDataToGeoJSONObject,
+  mapSensorsDataToGeoJSON,
 } from "utils";
+
 import {
   SwitchButtonWrapper,
   SwitchButtonWrapperLabel,
 } from "./CustomMapElements";
 import "./CustomMap.css";
-import { fetchSensors } from "redux/airQualitySensor/actions";
+import {
+  fetchSensors,
+  updateSensorDetail,
+} from "redux/airQualitySensor/actions";
 
-import { selectSensors } from "redux/airQualitySensor/selector";
+import {
+  selectSensors,
+  selectSensorsDetail,
+} from "redux/airQualitySensor/selector";
 
 const mapBoxToken = process.env.REACT_APP_MAP_BOX_ACCESS_TOKEN as string;
 const aqicnBaseURL = process.env.REACT_APP_AQICN_API_URL as string;
@@ -47,6 +56,7 @@ const CustomMap: React.FC = () => {
   const [stationData, setStationData] = useState<any>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const sensors = useAppSelector(selectSensors);
+  const sensorsDetail = useAppSelector(selectSensorsDetail);
   const [mapLoadded, setMapLoadded] = useState(false);
 
   const popUpRef = useRef(
@@ -65,7 +75,7 @@ const CustomMap: React.FC = () => {
 
   useEffect(() => {
     const sensorsName = sensors.map((item: any) => item.properties.name);
-    fetchAllStationsDetail(sensorsName);
+    if (sensorsName.length) fetchAllStationsDetail(sensorsName);
   }, [sensors]);
 
   useEffect(() => {
@@ -73,7 +83,7 @@ const CustomMap: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    drawSensorsOnMap(mapDataToGeoJSONObject(sensors));
+    // drawSensorsOnMap(mapDataToGeoJSONObject(sensors));
     if (sensors.length && sensors[0].geometry) {
       flyToPoint(sensors[0].geometry.coordinates);
     }
@@ -92,28 +102,43 @@ const CustomMap: React.FC = () => {
     return request.get(aqicnURL("/map/search"));
   };
 
+  const drawSensorsDetailFromStore = () => {
+    console.log("before draw :: ", sensorsDetail);
+  };
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchAllStationsDetail = async (sensors: any) => {
+    const combinedData: any = {};
     for (const iterator of sensors) {
-      console.log("this is check in for :: ", check, checkRef);
+      // console.log("this is check in for :: ", check, checkRef);
       if (check) return;
       try {
         const { data } = await fetchStationDetail();
+        // console.log("this is each sensor data :: ", data);
+        dispatch(updateSensorDetail(data.data.city.name, data.data));
+        combinedData[data.data.city.name] = data.data;
       } catch (e) {}
     }
+    drawSensorsDetailFromStore();
+    drawSensorsOnMap(
+      mapDataToGeoJSONObject(
+        mapSensorsDataToGeoJSON(Object.values(combinedData))
+      ) as any
+    );
     console.log("got compelete !!!!!");
   };
 
-  const drawSensorsOnMap = (sensors: {
-    type: string;
-    features: Array<any>;
-  }) => {
+  const drawSensorsOnMap = (sensors: Array<FeatureCollection>) => {
+    console.log("drrraw ::: ", sensors);
     if (map.current instanceof Map && map.current.getSource) {
       const getSource: GeoJSONSource = map.current.getSource(
         "random-points-data"
       ) as GeoJSONSource;
       console.log("this is maped out :: ", sensors);
-      getSource.setData(sensors as any);
+      if (getSource && getSource.setData) {
+        console.log("this is maped out :: in the iffff ", sensors);
+        getSource.setData(sensors as any);
+      }
     }
   };
 

@@ -14,7 +14,7 @@ export const fetchSensors = () => async (dispatch) => {
       (acc, item) => ({
         ...acc,
         [item.properties.name]: {
-          data: {},
+          data: null,
           geometry: item.geometry.coordinates,
         },
       }),
@@ -26,14 +26,10 @@ export const fetchSensors = () => async (dispatch) => {
   } catch (e) {
     console.log("this is errror :::");
   }
-
-  // Return result:
-  // return data;
-  // try {
-  //   await api
-  //     .users(1, "ir")
-  //     .then((res) => dispatch(sharedActions.successUsers(res.data.results)));
-  // } catch (e) {
-  //   console.log("error has happend!!");
-  // }
 };
+
+export const updateSensorDetail = (name, data) =>
+  airQualitySensorActions.updateSensorDetail({
+    sensorName: name,
+    sensorData: data,
+  });

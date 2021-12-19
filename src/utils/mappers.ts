@@ -1,4 +1,8 @@
-import { StationResponse, FeatureCollection } from "../model";
+import {
+  StationResponse,
+  FeatureCollection,
+  StationDetailResponse,
+} from "../model";
 
 export const mapStationsDataToGeoJSON = (
   stations: Array<StationResponse>
@@ -14,6 +18,25 @@ export const mapStationsDataToGeoJSON = (
         id: uid,
         name: station.name,
         aqi: Number(aqi),
+      },
+    })
+  );
+
+export const mapSensorsDataToGeoJSON = (
+  sensors: Array<StationDetailResponse>
+): Array<FeatureCollection> =>
+  sensors.map(
+    (sensor: StationDetailResponse): FeatureCollection => ({
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: sensor.city.geo as any,
+      },
+      properties: {
+        id: sensor.idx,
+        name: sensor.city.name,
+        ...sensor,
+        aqi: Number(sensor.iaqi.pm25.v),
       },
     })
   );
