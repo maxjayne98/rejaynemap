@@ -16,7 +16,7 @@ const airQualitySensorSlice = createSlice({
       state.isSensorsLoading = action.payload;
     },
     setSensorsDetail: (state, action) => {
-      state.users = [...action.payload, ...state.users];
+      state.sensorsDetail = action.payload;
     },
     updateSensorDetail: (state, action) => {
       state.sensorsDetail[action.payload.sensorName] =

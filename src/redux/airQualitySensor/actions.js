@@ -9,9 +9,20 @@ export const fetchSensors = () => async (dispatch) => {
   try {
     const { data } = await api.getSensors();
     console.log("this is in store ::: ", data.data);
-    dispatch(
-      airQualitySensorActions.setSensors(mapStationsDataToGeoJSON(data.data))
+    const mapStationsDataInGeoJSON = mapStationsDataToGeoJSON(data.data);
+    const sensorsDetail = mapStationsDataInGeoJSON.reduce(
+      (acc, item) => ({
+        ...acc,
+        [item.properties.name]: {
+          data: {},
+          geometry: item.geometry.coordinates,
+        },
+      }),
+      {}
     );
+    console.log("sensorsDetail ::: ", sensorsDetail);
+    dispatch(airQualitySensorActions.setSensors(mapStationsDataInGeoJSON));
+    dispatch(airQualitySensorActions.setSensorsDetail(sensorsDetail));
   } catch (e) {
     console.log("this is errror :::");
   }

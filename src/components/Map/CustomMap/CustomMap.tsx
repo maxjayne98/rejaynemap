@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useRef, useReducer } from "react";
 import { useAppDispatch, useAppSelector } from "redux/hooks";
-import mapboxgl, { Map, GeoJSONSource, LngLatLike } from "mapbox-gl";
+import mapboxgl, {
+  Map,
+  GeoJSONSource,
+  MapboxOptions,
+  Control,
+  IControl,
+} from "mapbox-gl";
 import ReactDOM from "react-dom";
 import { FeatureCollection } from "model";
 import AnimatedPopup from "components/Map/AnimatedPopup/";
@@ -41,10 +47,8 @@ const CustomMap: React.FC = () => {
   const [stationData, setStationData] = useState<any>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const sensors = useAppSelector(selectSensors);
-  useEffect(() => {
-    console.log("this is sensors", sensors);
-    return () => {};
-  }, [sensors]);
+  const [mapLoadded, setMapLoadded] = useState(false);
+
   const popUpRef = useRef(
     new AnimatedPopup({
       offset: 25,
@@ -59,75 +63,122 @@ const CustomMap: React.FC = () => {
     })
   );
 
-  const [mapLoadded, setMapLoadded] = useState(false);
-
-  const fetchStationDetails = async () => {
-    try {
-      const { data } = await request.get(aqicnURL("/map/bounds"));
-      setData(mapStationsDataToGeoJSON(data.data));
-      console.log("fetch api this is data :: ", data);
-    } catch (error) {
-      console.log("This is error :: ", error);
-    }
-  };
-  const fetchStationDetail = async () => {
-    try {
-      setIsLoading(true);
-      const { data } = await request.get(aqicnURL("/map/search"));
-      console.log("fetch api search this is data :: ", data);
-      setIsLoading(false);
-    } catch (error) {
-      setIsLoading(false);
-      console.log("This is error :: ", error);
-    }
-  };
+  useEffect(() => {
+    const sensorsName = sensors.map((item: any) => item.properties.name);
+    fetchAllStationsDetail(sensorsName);
+  }, [sensors]);
 
   useEffect(() => {
-    fetchStationDetails();
     dispatch(fetchSensors());
   }, []);
 
   useEffect(() => {
-    if (map.current instanceof Map && mapLoadded && sensors.length) {
-      const { lng, lat } = map.current.getCenter();
-      if (map.current.getSource) {
-        const getSource: GeoJSONSource = map.current.getSource(
-          "random-points-data"
-        ) as GeoJSONSource;
-        console.log("this is maped out :: ", mapDataToGeoJSONObject(sensors));
-        getSource.setData(mapDataToGeoJSONObject(sensors) as any);
-        // map.current.setCenter(data[0].geometry.coordinates)
-        if (sensors[0].geometry) {
-          map.current.flyTo({
-            center: sensors[0].geometry.coordinates,
-          });
-        }
-      }
+    drawSensorsOnMap(mapDataToGeoJSONObject(sensors));
+    if (sensors.length && sensors[0].geometry) {
+      flyToPoint(sensors[0].geometry.coordinates);
     }
   }, [sensors, mapLoadded]);
 
+  const fetchStationDetail = async () => {
+    // try {
+    //   setIsLoading(true);
+    //   const { data } = await request.get(aqicnURL("/map/search"));
+    //   console.log("fetch api search this is data :: ", data);
+    //   setIsLoading(false);
+    // } catch (error) {
+    //   setIsLoading(false);
+    //   console.log("This is error :: ", error);
+    // }
+    return request.get(aqicnURL("/map/search"));
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchAllStationsDetail = async (sensors: any) => {
+    for (const iterator of sensors) {
+      console.log("this is check in for :: ", check, checkRef);
+      if (check) return;
+      try {
+        const { data } = await fetchStationDetail();
+      } catch (e) {}
+    }
+    console.log("got compelete !!!!!");
+  };
+
+  const drawSensorsOnMap = (sensors: {
+    type: string;
+    features: Array<any>;
+  }) => {
+    if (map.current instanceof Map && map.current.getSource) {
+      const getSource: GeoJSONSource = map.current.getSource(
+        "random-points-data"
+      ) as GeoJSONSource;
+      console.log("this is maped out :: ", sensors);
+      getSource.setData(sensors as any);
+    }
+  };
+
+  const flyToPoint = (coordinates: [number, number]) => {
+    if (map.current instanceof Map) {
+      map.current.flyTo({
+        center: coordinates,
+      });
+    }
+  };
+
+  const initMap = (options: MapboxOptions) => {
+    map.current = new mapboxgl.Map(options);
+  };
+
+  const addMapController = (
+    control: Control | IControl,
+    position?: "top-right" | "top-left" | "bottom-right" | "bottom-left"
+  ) => {
+    if (map.current instanceof Map) {
+      map.current.addControl(control, position);
+    }
+  };
+
+  const addLayerToMap = (options: any) => {
+    if (map.current instanceof Map) {
+      map.current.addLayer(options);
+    }
+  };
+
+  const addSourceToMap = (layerName: string, options: any) => {
+    if (map.current instanceof Map) {
+      map.current.addSource(layerName, options);
+    }
+  };
+
+  const addFeaturePopupToMap = (feature: FeatureCollection) => {};
+
+  const removeMap = () => {
+    if (map.current && map.current.remove) {
+      map.current.remove();
+    }
+  };
+
   useEffect(() => {
     if (map.current) return;
-    map.current = new mapboxgl.Map({
+    initMap({
       container: mapContainer.current || "",
       style: "mapbox://styles/mapbox/streets-v11",
       center: [lng, lat],
       zoom: zoom,
     });
-    map.current &&
-      map.current.addControl &&
-      map.current.addControl(new mapboxgl.NavigationControl(), "bottom-right");
-    map.current.on("load", () => {
-      if (map.current instanceof Map) {
-        map.current.addSource("random-points-data", {
+
+    addMapController(new mapboxgl.NavigationControl(), "bottom-right");
+    // @ts-ignore
+    if (map.current instanceof Map) {
+      // @ts-ignore
+      map.current.on("load", () => {
+        addSourceToMap("random-points-data", {
           type: "geojson",
-          //REFACTOR CORRECT TYPE
           data: mapDataToGeoJSONObject([]) as any,
         });
         setMapLoadded(true);
-      }
-      if (map.current instanceof Map) {
-        map.current.addLayer({
+
+        addLayerToMap({
           id: "random-points-layer",
           source: "random-points-data",
           type: "circle",
@@ -146,70 +197,75 @@ const CustomMap: React.FC = () => {
             },
           },
         });
-      }
-      if (map.current instanceof Map) {
-        map.current.on("mouseenter", "random-points-layer", async (e: any) => {
-          if (e.features.length) {
-            const feature: FeatureCollection = e.features[0];
-            const popupNode = document.createElement("div");
-            ReactDOM.render(<CustomPopUp feature={feature} />, popupNode);
-            const coordinates = e.features[0].geometry.coordinates.slice();
-            // Ensure that if the map is zoomed out such that multiple
-            // copies of the feature are visible, the popup appears
-            // over the copy being pointed to.
-            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-              coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-            }
 
+        if (map.current instanceof Map) {
+          map.current.on(
+            "mouseenter",
+            "random-points-layer",
+            async (e: any) => {
+              if (e.features.length) {
+                const feature: FeatureCollection = e.features[0];
+                const popupNode = document.createElement("div");
+                ReactDOM.render(<CustomPopUp feature={feature} />, popupNode);
+                const coordinates = e.features[0].geometry.coordinates.slice();
+                // Ensure that if the map is zoomed out such that multiple
+                // copies of the feature are visible, the popup appears
+                // over the copy being pointed to.
+                while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                  coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                }
+
+                try {
+                  popUpRef.current
+                    .setLngLat(coordinates)
+                    .setDOMContent(popupNode)
+                    .addTo(map.current as Map);
+                } catch (error) {
+                  console.log("this is errrrrrror :: ", error);
+                }
+              }
+            }
+          );
+
+          map.current.on("mouseleave", "random-points-layer", (e: any) => {
             try {
-              popUpRef.current
-                .setLngLat(coordinates)
-                .setDOMContent(popupNode)
-                .addTo(map.current as Map);
+              popUpRef.current.remove();
             } catch (error) {
               console.log("this is errrrrrror :: ", error);
             }
-          }
-        });
+          });
+        }
+      });
+    }
 
-        map.current.on("mouseleave", "random-points-layer", (e: any) => {
-          try {
-            popUpRef.current.remove();
-          } catch (error) {
-            console.log("this is errrrrrror :: ", error);
-          }
-        });
-      }
-    });
     return () => {
-      if (map.current && map.current.remove) {
-        map.current.remove();
-      }
+      removeMap();
     };
   }, []);
+
+  const checkRef = useRef(false);
   const [check, setCheck] = useState(false);
   const [poolingELid, setPoolinELid] = useState<NodeJS.Timer>();
+
   const checkBoxButtonOnChange = (event: any) => {
     console.log("this is checkBox value", event?.target.value);
     setCheck(!check);
+    checkRef.current = !check;
   };
+
   useEffect(() => {
     if (check) {
       const id: NodeJS.Timer = setInterval(() => {
-        fetchStationDetails();
+        dispatch(fetchSensors);
       }, 5000);
       setPoolinELid(id);
     } else {
       clearInterval(poolingELid as any);
     }
   }, [check]);
+
   return (
     <>
-      {/* <input
-        type="checkbox"
-        checked={check}
-        onChange={checkBoxButtonOnChange}
-      /> */}
       <div style={{ position: "relative" }}>
         <div
           style={{
@@ -224,7 +280,7 @@ const CustomMap: React.FC = () => {
               <SwitchButtonWrapperLabel>Auto </SwitchButtonWrapperLabel>
               <SwitchButtonWrapperLabel>Update</SwitchButtonWrapperLabel>
             </div>
-            <SwitchButton />
+            <SwitchButton onClick={checkBoxButtonOnChange} />
           </SwitchButtonWrapper>
         </div>
       </div>
@@ -241,13 +297,7 @@ const CustomMap: React.FC = () => {
             zIndex: 1000,
           }}
         >
-          <FloatingMenu>
-            <div>salam</div>
-            <ul>
-              <li>salam 2</li>
-              <li>salam 3</li>
-            </ul>
-          </FloatingMenu>
+          <FloatingMenu></FloatingMenu>
         </div>
       </div>
     </>
