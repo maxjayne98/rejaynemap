@@ -1,5 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { lightTheme, darkTheme } from "../../assets/styles/theme";
+import {
+  lightTheme,
+  darkTheme,
+  purpleCollorPallet,
+  blueCollorPallet,
+} from "../../assets/styles/theme";
 import { ColorPallete } from "../../model";
 import { get, set } from "local-storage";
 
@@ -8,12 +13,20 @@ const themePallete: { [key: string]: ColorPallete } = {
   light: lightTheme,
 };
 
+const themeColorPallete: any = {
+  purple: purpleCollorPallet,
+  blue: blueCollorPallet,
+};
+
+const theme = themePallete[get<string>("theme") || "light"];
+const colorPallete = themeColorPallete[get<string>("colorPallete") || "purple"];
+
 const initialState: themeState = {
-  theme: themePallete[get<string>("theme") || "light"],
+  theme: { ...theme, ...colorPallete },
 };
 
 interface themeState {
-  theme: ColorPallete;
+  theme: any;
 }
 
 const themeSlice = createSlice({
@@ -21,8 +34,12 @@ const themeSlice = createSlice({
   initialState: initialState,
   reducers: {
     toggleTheme: (state, action) => {
-      state.theme = { ...themePallete[action.payload] };
+      state.theme = { ...state.theme, ...themePallete[action.payload] };
       set<string>("theme", action.payload);
+    },
+    toggleColorPallete: (state, action) => {
+      state.theme = { ...state.theme, ...themeColorPallete[action.payload] };
+      set<string>("colorPallete", action.payload);
     },
   },
 });

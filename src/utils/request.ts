@@ -2,6 +2,7 @@ import axios from "axios";
 import { get, set } from "local-storage";
 
 export const request = axios.create({
+  baseURL: process.env.REACT_APP_AQICN_API_URL,
   timeout: Number(process.env.REACT_APP_API_TIMEOUT),
 });
 
@@ -32,4 +33,3 @@ request.interceptors.request.use(
 //     return Promise.reject(error);
 //   }
 // );
-

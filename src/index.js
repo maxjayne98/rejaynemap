@@ -4,7 +4,7 @@ import Routes from "./routes";
 import { Provider } from "react-redux";
 import store from "./redux/store";
 import { ToastContainer } from "react-toastify";
-import { GlobalStyles } from "./assets/styles/theme";
+import { GlobalStyles } from "./assets/styles/global";
 import reportWebVitals from "./reportWebVitals";
 import CustomThemeProvider from "./components/Theme/CustomThemeProvider";
 import "react-toastify/dist/ReactToastify.css";

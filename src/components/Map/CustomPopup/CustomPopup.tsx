@@ -44,7 +44,7 @@ const CustomPopup: React.FC<Props> = ({ feature }): JSX.Element => {
   // const { id, name, description } = feature.properties;
   const [data, setData] = useState<StationDetailResponse>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
+  console.log(feature.properties.name, feature.properties.aqi);
   const fetchStationDetails = async () => {
     try {
       setIsLoading(true);
