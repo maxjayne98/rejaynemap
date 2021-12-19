@@ -30,7 +30,7 @@ export const mapSensorsDataToGeoJSON = (
       type: "Feature",
       geometry: {
         type: "Point",
-        coordinates: sensor.city.geo as any,
+        coordinates: [sensor.city.geo[1], sensor.city.geo[0]] as any,
       },
       properties: {
         id: sensor.idx,

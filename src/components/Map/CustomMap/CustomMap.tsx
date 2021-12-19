@@ -83,10 +83,10 @@ const CustomMap: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // drawSensorsOnMap(mapDataToGeoJSONObject(sensors));
-    if (sensors.length && sensors[0].geometry) {
-      flyToPoint(sensors[0].geometry.coordinates);
-    }
+    drawSensorsOnMap(mapDataToGeoJSONObject(sensors));
+    // if (sensors.length && sensors[0].geometry) {
+    //   flyToPoint(sensors[0].geometry.coordinates);
+    // }
   }, [sensors, mapLoadded]);
 
   const fetchStationDetail = async () => {
@@ -119,16 +119,21 @@ const CustomMap: React.FC = () => {
         combinedData[data.data.city.name] = data.data;
       } catch (e) {}
     }
-    drawSensorsDetailFromStore();
+    const combinedDataValues: any = Object.values(combinedData);
     drawSensorsOnMap(
-      mapDataToGeoJSONObject(
-        mapSensorsDataToGeoJSON(Object.values(combinedData))
-      ) as any
+      mapDataToGeoJSONObject(mapSensorsDataToGeoJSON(combinedDataValues))
     );
+    flyToPoint([
+      combinedDataValues[0].city.geo[1],
+      combinedDataValues[0].city.geo[0],
+    ]);
     console.log("got compelete !!!!!");
   };
 
-  const drawSensorsOnMap = (sensors: Array<FeatureCollection>) => {
+  const drawSensorsOnMap = (sensors: {
+    type: string;
+    features: Array<any>;
+  }) => {
     console.log("drrraw ::: ", sensors);
     if (map.current instanceof Map && map.current.getSource) {
       const getSource: GeoJSONSource = map.current.getSource(
