@@ -252,7 +252,11 @@ const CustomMap: React.FC = () => {
               if (e.features.length) {
                 const feature: FeatureCollection = e.features[0];
                 const popupNode = document.createElement("div");
-                ReactDOM.render(<CustomPopUp feature={feature} />, popupNode);
+
+                ReactDOM.render(
+                  <CustomPopUp feature={feature} detail={feature.properties} />,
+                  popupNode
+                );
                 const coordinates = e.features[0].geometry.coordinates.slice();
                 // Ensure that if the map is zoomed out such that multiple
                 // copies of the feature are visible, the popup appears
