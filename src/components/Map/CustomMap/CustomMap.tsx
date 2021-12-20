@@ -75,7 +75,7 @@ const CustomMap: React.FC = () => {
 
   useEffect(() => {
     const sensorsName = sensors.map((item: any) => item.properties.name);
-    if (sensorsName.length) fetchAllStationsDetail(sensorsName);
+    if (sensorsName.length) fetchSensorsDetailSaveOnStore(sensorsName);
   }, [sensors]);
 
   useEffect(() => {
@@ -107,28 +107,38 @@ const CustomMap: React.FC = () => {
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const fetchAllStationsDetail = async (sensors: any) => {
+  const fetchSensorsDetailSaveOnStore = async (sensors: any) => {
     const combinedData: any = {};
     for (const iterator of sensors) {
-      // console.log("this is check in for :: ", check, checkRef);
       if (check) return;
       try {
         const { data } = await fetchStationDetail();
-        // console.log("this is each sensor data :: ", data);
         dispatch(updateSensorDetail(data.data.city.name, data.data));
         combinedData[data.data.city.name] = data.data;
       } catch (e) {}
     }
     const combinedDataValues: any = Object.values(combinedData);
+    // drawSensorsOnMap(
+    //   mapDataToGeoJSONObject(mapSensorsDataToGeoJSON(combinedDataValues))
+    // );
+    // flyToPoint([
+    //   combinedDataValues[0].city.geo[1],
+    //   combinedDataValues[0].city.geo[0],
+    // ]);
+    console.log("got compelete !!!!!");
+  };
+
+  // const updateSensorsDetailSaveOnStore
+
+  useEffect(() => {
+    const combinedDataValues: any = Object.values(sensorsDetail)
+      .filter((sensorDetail: any) => sensorDetail.data)
+      .map((sensorDetail: any) => sensorDetail.data);
+
     drawSensorsOnMap(
       mapDataToGeoJSONObject(mapSensorsDataToGeoJSON(combinedDataValues))
     );
-    flyToPoint([
-      combinedDataValues[0].city.geo[1],
-      combinedDataValues[0].city.geo[0],
-    ]);
-    console.log("got compelete !!!!!");
-  };
+  }, [sensorsDetail]);
 
   const drawSensorsOnMap = (sensors: {
     type: string;
@@ -286,8 +296,9 @@ const CustomMap: React.FC = () => {
   useEffect(() => {
     if (check) {
       const id: NodeJS.Timer = setInterval(() => {
-        dispatch(fetchSensors);
-      }, 5000);
+        const sensorsName = sensors.map((item: any) => item.properties.name);
+        fetchSensorsDetailSaveOnStore(sensorsName);
+      }, 1000);
       setPoolinELid(id);
     } else {
       clearInterval(poolingELid as any);
