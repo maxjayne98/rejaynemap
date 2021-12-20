@@ -36,7 +36,7 @@ export const mapSensorsDataToGeoJSON = (
         id: sensor.idx,
         name: sensor.city.name,
         ...sensor,
-        aqi: Number(sensor.iaqi.pm25.v),
+        aqi: Number(sensor.iaqi.pm25?.v),
       },
     })
   );

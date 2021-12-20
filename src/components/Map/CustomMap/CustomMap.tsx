@@ -35,7 +35,7 @@ import {
   selectSensors,
   selectSensorsDetail,
 } from "redux/airQualitySensor/selector";
-
+import { aqicnURLGenerator } from "redux/airQualitySensor/url";
 const mapBoxToken = process.env.REACT_APP_MAP_BOX_ACCESS_TOKEN as string;
 const aqicnBaseURL = process.env.REACT_APP_AQICN_API_URL as string;
 const aqicnAccessToken = process.env.REACT_APP_AQICN_ACCESS_TOKEN;
@@ -79,7 +79,7 @@ const CustomMap: React.FC = () => {
   }, [sensors]);
 
   useEffect(() => {
-    dispatch(fetchSensors());
+    dispatch(fetchSensors([52.335214, 4.803647], [52.404388, 5.00861]));
   }, []);
 
   useEffect(() => {
@@ -89,7 +89,7 @@ const CustomMap: React.FC = () => {
     // }
   }, [sensors, mapLoadded]);
 
-  const fetchStationDetail = async () => {
+  const fetchStationDetail = async (name: string) => {
     // try {
     //   setIsLoading(true);
     //   const { data } = await request.get(aqicnURL("/map/search"));
@@ -99,7 +99,7 @@ const CustomMap: React.FC = () => {
     //   setIsLoading(false);
     //   console.log("This is error :: ", error);
     // }
-    return request.get(aqicnURL("/map/search"));
+    return request.get(aqicnURLGenerator(`/feed/${name}/?`));
   };
 
   const drawSensorsDetailFromStore = () => {
@@ -107,12 +107,13 @@ const CustomMap: React.FC = () => {
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const fetchSensorsDetailSaveOnStore = async (sensors: any) => {
+  const fetchSensorsDetailSaveOnStore = async (sensorsName: any) => {
     const combinedData: any = {};
-    for (const iterator of sensors) {
+    for (const name of sensorsName) {
       if (check) return;
       try {
-        const { data } = await fetchStationDetail();
+        const { data } = await fetchStationDetail(name);
+        console.log("sensor data api res :: ", data);
         dispatch(updateSensorDetail(data.data.city.name, data.data));
         combinedData[data.data.city.name] = data.data;
       } catch (e) {}
@@ -121,11 +122,11 @@ const CustomMap: React.FC = () => {
     // drawSensorsOnMap(
     //   mapDataToGeoJSONObject(mapSensorsDataToGeoJSON(combinedDataValues))
     // );
-    // flyToPoint([
-    //   combinedDataValues[0].city.geo[1],
-    //   combinedDataValues[0].city.geo[0],
-    // ]);
-    console.log("got compelete !!!!!");
+    flyToPoint([
+      combinedDataValues[0]?.city.geo[1],
+      combinedDataValues[0]?.city.geo[0],
+    ]);
+    console.log("got compelete !!!!!", combinedDataValues);
   };
 
   // const updateSensorsDetailSaveOnStore
@@ -134,10 +135,15 @@ const CustomMap: React.FC = () => {
     const combinedDataValues: any = Object.values(sensorsDetail)
       .filter((sensorDetail: any) => sensorDetail.data)
       .map((sensorDetail: any) => sensorDetail.data);
-
+    console.log("combinedDataValues :: ", combinedDataValues[0]);
     drawSensorsOnMap(
       mapDataToGeoJSONObject(mapSensorsDataToGeoJSON(combinedDataValues))
     );
+    // if (combinedDataValues[0])
+    //   flyToPoint([
+    //     combinedDataValues[0].city.geo[1],
+    //     combinedDataValues[0].city.geo[0],
+    //   ]);
   }, [sensorsDetail]);
 
   const drawSensorsOnMap = (sensors: {
