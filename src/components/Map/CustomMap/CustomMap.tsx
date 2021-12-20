@@ -110,7 +110,7 @@ const CustomMap: React.FC = () => {
   const fetchSensorsDetailSaveOnStore = async (sensorsName: any) => {
     const combinedData: any = {};
     for (const name of sensorsName) {
-      if (check) return;
+      // if (check) return;
       try {
         const { data } = await fetchStationDetail(name);
         console.log("sensor data api res :: ", data);
@@ -304,7 +304,7 @@ const CustomMap: React.FC = () => {
       const id: NodeJS.Timer = setInterval(() => {
         const sensorsName = sensors.map((item: any) => item.properties.name);
         fetchSensorsDetailSaveOnStore(sensorsName);
-      }, 1000);
+      }, 10000);
       setPoolinELid(id);
     } else {
       clearInterval(poolingELid as any);
