@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useReducer } from "react";
-import { useAppDispatch, useAppSelector } from "redux/hooks";
 import mapboxgl, {
   Map,
   GeoJSONSource,
@@ -11,30 +10,9 @@ import ReactDOM from "react-dom";
 import { FeatureCollection } from "model";
 import AnimatedPopup from "components/Map/AnimatedPopup/";
 import CustomPopUp from "components/Map/CustomPopup";
-import SwitchButton from "components/ToolBox/SwitchButton";
-import FloatingMenu from "components/ToolBox/FloatingMenu";
-
-import {
-  request,
-  mapStationsDataToGeoJSON,
-  mapDataToGeoJSONObject,
-  mapSensorsDataToGeoJSON,
-} from "utils";
-
-import {
-  SwitchButtonWrapper,
-  SwitchButtonWrapperLabel,
-} from "./CustomMapElements";
+import { mapDataToGeoJSONObject, mapSensorsDataToGeoJSON } from "utils";
 import "./CustomMap.css";
-import {
-  fetchSensors,
-  updateSensorDetail,
-} from "redux/airQualitySensor/actions";
 
-import {
-  selectSensors,
-  selectSensorsDetail,
-} from "redux/airQualitySensor/selector";
 import { aqicnURLGenerator } from "redux/airQualitySensor/url";
 const mapBoxToken = process.env.REACT_APP_MAP_BOX_ACCESS_TOKEN as string;
 const aqicnBaseURL = process.env.REACT_APP_AQICN_API_URL as string;
@@ -43,20 +21,21 @@ const aqicnAccessToken = process.env.REACT_APP_AQICN_ACCESS_TOKEN;
 const aqicnURL = (url: string) => `${aqicnBaseURL}${url}`;
 mapboxgl.accessToken = mapBoxToken;
 
-const CustomMap: React.FC = () => {
-  const dispatch = useAppDispatch();
+const CustomMap: React.FC<{ sensors: any; sensorsDetail: any }> = ({
+  sensors,
+  sensorsDetail,
+}) => {
   const mapContainer = useRef<HTMLDivElement>();
   const map = useRef<Map | null>(null);
-  const [lng, setLng] = useState(-70.9);
-  const [lat, setLat] = useState(42.35);
+  const [lng, setLng] = useState(4.803647);
+  const [lat, setLat] = useState(52.335214);
   const [zoom, setZoom] = useState(9);
   const [data, setData] = useState<Array<FeatureCollection>>([]);
   const [loading, setLoading] = useState(false);
 
   const [stationData, setStationData] = useState<any>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const sensors = useAppSelector(selectSensors);
-  const sensorsDetail = useAppSelector(selectSensorsDetail);
+
   const [mapLoadded, setMapLoadded] = useState(false);
 
   const popUpRef = useRef(
@@ -74,60 +53,47 @@ const CustomMap: React.FC = () => {
   );
 
   useEffect(() => {
-    const sensorsName = sensors.map((item: any) => item.properties.name);
-    if (sensorsName.length) fetchSensorsDetailSaveOnStore(sensorsName);
-  }, [sensors]);
-
-  useEffect(() => {
-    dispatch(fetchSensors([52.335214, 4.803647], [52.404388, 5.00861]));
-  }, []);
-
-  useEffect(() => {
     drawSensorsOnMap(mapDataToGeoJSONObject(sensors));
-    // if (sensors.length && sensors[0].geometry) {
-    //   flyToPoint(sensors[0].geometry.coordinates);
-    // }
+    if (sensors.length && sensors[0].geometry) {
+      flyToPoint(sensors[0].geometry.coordinates);
+    }
   }, [sensors, mapLoadded]);
 
-  const fetchStationDetail = async (name: string) => {
-    // try {
-    //   setIsLoading(true);
-    //   const { data } = await request.get(aqicnURL("/map/search"));
-    //   console.log("fetch api search this is data :: ", data);
-    //   setIsLoading(false);
-    // } catch (error) {
-    //   setIsLoading(false);
-    //   console.log("This is error :: ", error);
-    // }
-    return request.get(aqicnURLGenerator(`/feed/${name}/?`));
-  };
+  // const fetchStationDetail = async (name: string) => {
+  //   // try {
+  //   //   setIsLoading(true);
+  //   //   const { data } = await request.get(aqicnURL("/map/search"));
+  //   //   console.log("fetch api search this is data :: ", data);
+  //   //   setIsLoading(false);
+  //   // } catch (error) {
+  //   //   setIsLoading(false);
+  //   //   console.log("This is error :: ", error);
+  //   // }
+  //   return request.get(aqicnURLGenerator(`/feed/${name}/?`));
+  // };
 
-  const drawSensorsDetailFromStore = () => {
-    console.log("before draw :: ", sensorsDetail);
-  };
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const fetchSensorsDetailSaveOnStore = async (sensorsName: any) => {
-    const combinedData: any = {};
-    for (const name of sensorsName) {
-      // if (check) return;
-      try {
-        const { data } = await fetchStationDetail(name);
-        console.log("sensor data api res :: ", data);
-        dispatch(updateSensorDetail(data.data.city.name, data.data));
-        combinedData[data.data.city.name] = data.data;
-      } catch (e) {}
-    }
-    const combinedDataValues: any = Object.values(combinedData);
-    // drawSensorsOnMap(
-    //   mapDataToGeoJSONObject(mapSensorsDataToGeoJSON(combinedDataValues))
-    // );
-    flyToPoint([
-      combinedDataValues[0]?.city.geo[1],
-      combinedDataValues[0]?.city.geo[0],
-    ]);
-    console.log("got compelete !!!!!", combinedDataValues);
-  };
+  // // eslint-disable-next-line react-hooks/exhaustive-deps
+  // const fetchSensorsDetailSaveOnStore = async (sensorsName: any) => {
+  //   const combinedData: any = {};
+  //   for (const name of sensorsName) {
+  //     // if (check) return;
+  //     try {
+  //       const { data } = await fetchStationDetail(name);
+  //       console.log("sensor data api res :: ", data);
+  //       dispatch(updateSensorDetail(data.data.city.name, data.data));
+  //       combinedData[data.data.city.name] = data.data;
+  //     } catch (e) {}
+  //   }
+  //   const combinedDataValues: any = Object.values(combinedData);
+  //   // drawSensorsOnMap(
+  //   //   mapDataToGeoJSONObject(mapSensorsDataToGeoJSON(combinedDataValues))
+  //   // );
+  //   flyToPoint([
+  //     combinedDataValues[0]?.city.geo[1],
+  //     combinedDataValues[0]?.city.geo[0],
+  //   ]);
+  //   console.log("got compelete !!!!!", combinedDataValues);
+  // };
 
   // const updateSensorsDetailSaveOnStore
 
@@ -293,64 +259,12 @@ const CustomMap: React.FC = () => {
     };
   }, []);
 
-  const checkRef = useRef(false);
-  const [check, setCheck] = useState(false);
-  const [poolingELid, setPoolinELid] = useState<NodeJS.Timer>();
-
-  const checkBoxButtonOnChange = (event: any) => {
-    console.log("this is checkBox value", event?.target.value);
-    setCheck(!check);
-    checkRef.current = !check;
-  };
-
-  useEffect(() => {
-    if (check) {
-      const id: NodeJS.Timer = setInterval(() => {
-        const sensorsName = sensors.map((item: any) => item.properties.name);
-        fetchSensorsDetailSaveOnStore(sensorsName);
-      }, 10000);
-      setPoolinELid(id);
-    } else {
-      clearInterval(poolingELid as any);
-    }
-  }, [check]);
-
   return (
     <>
-      <div style={{ position: "relative" }}>
-        <div
-          style={{
-            position: "absolute",
-            top: "10px",
-            left: "10px",
-            zIndex: 1000,
-          }}
-        >
-          <SwitchButtonWrapper>
-            <div>
-              <SwitchButtonWrapperLabel>Auto </SwitchButtonWrapperLabel>
-              <SwitchButtonWrapperLabel>Update</SwitchButtonWrapperLabel>
-            </div>
-            <SwitchButton onClick={checkBoxButtonOnChange} />
-          </SwitchButtonWrapper>
-        </div>
-      </div>
       <div
         ref={mapContainer as React.RefObject<HTMLDivElement>}
         style={{ height: "100vh" }}
       />
-      <div style={{ position: "relative" }}>
-        <div
-          style={{
-            position: "absolute",
-            bottom: "10px",
-            left: "10px",
-            zIndex: 1000,
-          }}
-        >
-          <FloatingMenu></FloatingMenu>
-        </div>
-      </div>
     </>
   );
 };

@@ -10,8 +10,10 @@ export const fetchSensors =
   async (dispatch) => {
     // Fetch the backend endpoint:
     try {
-      const { data } = await api.getSensors(northWestern, southEastern);
-      console.log("this is in store ::: ", data.data);
+      const { data } = await api.getSensorsWithBoundingBox(
+        northWestern,
+        southEastern
+      );
       const mapStationsDataInGeoJSON = mapStationsDataToGeoJSON(data.data);
       const sensorsDetail = mapStationsDataInGeoJSON.reduce(
         (acc, item) => ({
@@ -23,7 +25,6 @@ export const fetchSensors =
         }),
         {}
       );
-      console.log("sensorsDetail ::: ", sensorsDetail);
       dispatch(airQualitySensorActions.setSensors(mapStationsDataInGeoJSON));
       dispatch(airQualitySensorActions.setSensorsDetail(sensorsDetail));
     } catch (e) {
@@ -31,8 +32,20 @@ export const fetchSensors =
     }
   };
 
-export const updateSensorDetail = (name, data) =>
-  airQualitySensorActions.updateSensorDetail({
-    sensorName: name,
-    sensorData: data,
-  });
+export const fetchSensorsDetail = (sensorsName) => async (dispatch) => {
+  console.log("each city 1");
+  const combinedData = {};
+  for (const name of sensorsName) {
+    try {
+      const { data } = await api.getSensorDetailByName(name);
+      dispatch(
+        airQualitySensorActions.updateSensorDetail({
+          sensorName: data.data.city.name,
+          sensorData: data.data,
+        })
+      );
+      combinedData[data.data.city.name] = data.data;
+    } catch (e) {}
+  }
+  console.log("got compelete !!!!!");
+};
