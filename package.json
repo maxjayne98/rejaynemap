@@ -34,6 +34,7 @@
     "redux-logger": "^3.0.6",
     "redux-toolkit": "^1.1.2",
     "styled-components": "^5.3.1",
+    "styled-icons": "^10.45.0",
     "typescript": "^4.4.2",
     "web-vitals": "^0.2.4"
   },

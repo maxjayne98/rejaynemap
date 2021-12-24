@@ -14,10 +14,24 @@ export const darkTheme = {
   text3: "#A9ADB1",
 };
 
-export const purpleCollorPallet = {
-  primary: "#A761FF",
-  secondary: "#BA80FF",
-  thirnary: "#E2CCFE",
+export const dimTheme = {
+  body: "#141c2c",
+  text: "#FFFFFF",
+  text1: "#404a54",
+  text2: "#69727b",
+  text3: "#c9cfcf",
+};
+
+export const violetCollorPallet = {
+  primary: "#fb1a7b",
+  secondary: "#f3217c",
+  thirnary: "#f578b2",
+};
+
+export const greenCollorPallet = {
+  primary: "#05bb7c",
+  secondary: "#61cba7",
+  thirnary: "#65d4ac",
 };
 
 export const blueCollorPallet = {

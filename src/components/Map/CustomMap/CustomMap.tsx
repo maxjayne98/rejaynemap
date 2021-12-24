@@ -150,6 +150,12 @@ const CustomMap: React.FC<{ sensors: any; sensorsDetail: any }> = ({
     }
   };
 
+  const removeController = (control: Control | IControl) => {
+    if (map.current instanceof Map) {
+      // map.current.removeControl(control);
+    }
+  };
+
   const addLayerToMap = (options: any) => {
     if (map.current instanceof Map) {
       map.current.addLayer(options);
@@ -177,9 +183,12 @@ const CustomMap: React.FC<{ sensors: any; sensorsDetail: any }> = ({
       style: "mapbox://styles/mapbox/streets-v11",
       center: [lng, lat],
       zoom: zoom,
+      logoPosition: undefined,
+      attributionControl: false,
     });
 
-    addMapController(new mapboxgl.NavigationControl(), "bottom-right");
+    addMapController(new mapboxgl.NavigationControl(), "top-right");
+    removeController(new mapboxgl.AttributionControl());
     // @ts-ignore
     if (map.current instanceof Map) {
       // @ts-ignore

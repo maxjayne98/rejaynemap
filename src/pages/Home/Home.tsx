@@ -20,7 +20,7 @@ import {
   SwitchButtonWrapperLabel,
 } from "./Elements";
 
-import FloatingMenu from "components/ToolBox/FloatingMenu";
+import SettingsFloatingMneu from "components/HomePage/SettingsFloatingMenu";
 import SwitchButton from "components/ToolBox/SwitchButton";
 import CustomMap from "components/Map/CustomMap";
 
@@ -48,9 +48,9 @@ const Home: React.FC = () => {
     if (sensorsName.length) dispatch(fetchSensorsDetail(sensorsName));
   }, [sensors]);
 
-  useEffect(() => {
-    dispatch(fetchSensors([52.335214, 4.803647], [52.404388, 5.00861]));
-  }, []);
+  // useEffect(() => {
+  //   dispatch(fetchSensors([52.335214, 4.803647], [52.404388, 5.00861]));
+  // }, []);
 
   const checkBoxButtonOnChange = useCallback(() => {
     setCheck((check) => !check);
@@ -78,18 +78,7 @@ const Home: React.FC = () => {
           </div>
         </div>
         <CustomMap sensors={sensors} sensorsDetail={sensorsDetail} />
-        <div style={{ position: "relative" }}>
-          <div
-            style={{
-              position: "absolute",
-              bottom: "10px",
-              left: "10px",
-              zIndex: 1000,
-            }}
-          >
-            <FloatingMenu></FloatingMenu>
-          </div>
-        </div>
+        <SettingsFloatingMneu />
       </HomeContainer>
     </>
   );
