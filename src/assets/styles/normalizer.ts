@@ -304,6 +304,6 @@ export const normalize = css`
     color: inherit;
   }
 `;
-export const Normalize = createGlobalStyle(normalize);
+export const Normalize = createGlobalStyle(normalize as any);
 
 export default normalize;
