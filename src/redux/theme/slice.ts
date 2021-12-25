@@ -11,9 +11,8 @@ import {
   ColorPalleteKey,
   IColorPallete,
   ITheme,
-  Theme,
+  AppTheme,
   ThemeKey,
-  ColorPallete,
 } from "model";
 import { get, set } from "local-storage";
 
@@ -36,9 +35,8 @@ const initialTheme = themePallete[cachedThemeName];
 
 const initialColorPallete = themeColorPallete[cachedPalleteName];
 
-interface IThemeState extends Theme, ColorPallete {}
 interface ThemeState {
-  theme: IThemeState;
+  theme: AppTheme;
   themeName: ThemeKey;
   palleteName: ColorPalleteKey;
 }

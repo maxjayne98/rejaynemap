@@ -5,7 +5,7 @@ function SwitchButton({ onClick }) {
   return (
     <>
       <input type="checkbox" id="toggle" onClick={onClick} />
-      <label for="toggle" className="toggleWrapper">
+      <label htmlFor="toggle" className="toggleWrapper">
         <div className="toggle"></div>
       </label>
     </>

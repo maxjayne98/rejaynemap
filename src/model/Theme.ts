@@ -15,6 +15,8 @@ export interface Theme {
   text3: string;
 }
 
+export interface AppTheme extends Theme, ColorPallete {}
+
 export type ITheme = {
   [key in ThemeKey]: Theme;
 };
