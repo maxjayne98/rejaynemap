@@ -20,7 +20,7 @@ import {
   SwitchButtonWrapperLabel,
 } from "./Elements";
 
-import SettingsFloatingMneu from "components/HomePage/SettingsFloatingMenu";
+import SettingsFloatingMneu from "components/HomePage/SettingsFloatingMenu/SettingsFloatingMenu";
 import SwitchButton from "components/ToolBox/SwitchButton";
 import CustomMap from "components/Map/CustomMap";
 

@@ -9,7 +9,7 @@ import {
   ColorPalleteItem,
   StylePickerContainer,
   ThemeItem,
-} from "components/HomePage/Element";
+} from "components/HomePage/SettingsFloatingMenu/Element";
 import {
   dimTheme,
   darkTheme,
