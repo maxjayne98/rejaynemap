@@ -46,71 +46,24 @@ const CustomMap: React.FC<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapStyle]);
 
-  // const fetchStationDetail = async (name: string) => {
-  //   // try {
-  //   //   setIsLoading(true);
-  //   //   const { data } = await request.get(aqicnURL("/map/search"));
-  //   //   console.log("fetch api search this is data :: ", data);
-  //   //   setIsLoading(false);
-  //   // } catch (error) {
-  //   //   setIsLoading(false);
-  //   //   console.log("This is error :: ", error);
-  //   // }
-  //   return request.get(aqicnURLGenerator(`/feed/${name}/?`));
-  // };
-
-  // // eslint-disable-next-line react-hooks/exhaustive-deps
-  // const fetchSensorsDetailSaveOnStore = async (sensorsName: any) => {
-  //   const combinedData: any = {};
-  //   for (const name of sensorsName) {
-  //     // if (check) return;
-  //     try {
-  //       const { data } = await fetchStationDetail(name);
-  //       console.log("sensor data api res :: ", data);
-  //       dispatch(updateSensorDetail(data.data.city.name, data.data));
-  //       combinedData[data.data.city.name] = data.data;
-  //     } catch (e) {}
-  //   }
-  //   const combinedDataValues: any = Object.values(combinedData);
-  //   // drawSensorsOnMap(
-  //   //   mapDataToGeoJSONObject(mapSensorsDataToGeoJSON(combinedDataValues))
-  //   // );
-  //   flyToPoint([
-  //     combinedDataValues[0]?.city.geo[1],
-  //     combinedDataValues[0]?.city.geo[0],
-  //   ]);
-  //   console.log("got compelete !!!!!", combinedDataValues);
-  // };
-
-  // const updateSensorsDetailSaveOnStore
-
   useEffect(() => {
     const combinedDataValues: any = Object.values(sensorsDetail)
       .filter((sensorDetail: any) => sensorDetail.data)
       .map((sensorDetail: any) => sensorDetail.data);
-    console.log("combinedDataValues :: ", combinedDataValues[0]);
     drawSensorsOnMap(
       mapDataToGeoJSONObject(mapSensorsDataToGeoJSON(combinedDataValues))
     );
-    // if (combinedDataValues[0])
-    //   flyToPoint([
-    //     combinedDataValues[0].city.geo[1],
-    //     combinedDataValues[0].city.geo[0],
-    //   ]);
   }, [sensorsDetail]);
 
   const drawSensorsOnMap = (sensors: {
     type: string;
     features: Array<any>;
   }) => {
-    console.log("drrraw ::: ", sensors);
     if (map.current instanceof Map && map.current.getSource) {
       const getSource: GeoJSONSource = map.current.getSource(
         AIR_QUALITY_SENSORS_LAYER_CONFIG.layerName
       ) as GeoJSONSource;
-      console.log("this is maped out :: ", sensors);
       if (getSource && getSource.setData) {
-        console.log("this is maped out :: in the iffff ", sensors);
         getSource.setData(sensors as any);
       }
     }
@@ -207,7 +160,7 @@ const CustomMap: React.FC<{
                     .setDOMContent(popupNode)
                     .addTo(map.current as Map);
                 } catch (error) {
-                  console.log("this is errrrrrror :: ", error);
+                  console.log("add map popup error :: :: ", error);
                 }
               }
             }
@@ -220,7 +173,7 @@ const CustomMap: React.FC<{
               try {
                 popUpRef.current.remove();
               } catch (error) {
-                console.log("this is errrrrrror :: ", error);
+                console.log("remove map popup error :: :: ", error);
               }
             }
           );
