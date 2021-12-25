@@ -22,7 +22,7 @@ import {
 
 import SettingsFloatingMneu from "components/HomePage/SettingsFloatingMenu/SettingsFloatingMenu";
 import SwitchButton from "components/ToolBox/SwitchButton";
-import CustomMap from "components/Map/CustomMap";
+import CustomMap from "components/HomePage/CustomMap";
 
 const Home: React.FC = () => {
   const [check, setCheck] = useState(false);
