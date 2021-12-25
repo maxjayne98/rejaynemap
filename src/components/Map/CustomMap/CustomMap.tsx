@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useReducer } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import mapboxgl, {
   Map,
   GeoJSONSource,
@@ -11,45 +11,27 @@ import { FeatureCollection } from "model";
 import AnimatedPopup from "components/Map/AnimatedPopup/";
 import CustomPopUp from "components/Map/CustomPopup";
 import { mapDataToGeoJSONObject, mapSensorsDataToGeoJSON } from "utils";
+import {
+  AIR_QUALITY_SENSORS_LAYER_CONFIG,
+  AIR_QUALITY_SENSOR_DETAIL_POPUP_CONFIG,
+  MAP_BOX_TOKEN,
+  AIR_QUALITY_MAP_INITIAL_CONFIG,
+} from "utils";
 import "./CustomMap.css";
 
-import { aqicnURLGenerator } from "redux/airQualitySensor/url";
-const mapBoxToken = process.env.REACT_APP_MAP_BOX_ACCESS_TOKEN as string;
-const aqicnBaseURL = process.env.REACT_APP_AQICN_API_URL as string;
-const aqicnAccessToken = process.env.REACT_APP_AQICN_ACCESS_TOKEN;
+mapboxgl.accessToken = MAP_BOX_TOKEN;
 
-const aqicnURL = (url: string) => `${aqicnBaseURL}${url}`;
-mapboxgl.accessToken = mapBoxToken;
-
-const CustomMap: React.FC<{ sensors: any; sensorsDetail: any }> = ({
-  sensors,
-  sensorsDetail,
-}) => {
+const CustomMap: React.FC<{
+  sensors: any;
+  sensorsDetail: any;
+  mapStyle: string;
+}> = ({ sensors, sensorsDetail, mapStyle }) => {
   const mapContainer = useRef<HTMLDivElement>();
   const map = useRef<Map | null>(null);
-  const [lng, setLng] = useState(4.803647);
-  const [lat, setLat] = useState(52.335214);
-  const [zoom, setZoom] = useState(9);
-  const [data, setData] = useState<Array<FeatureCollection>>([]);
-  const [loading, setLoading] = useState(false);
-
-  const [stationData, setStationData] = useState<any>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
   const [mapLoadded, setMapLoadded] = useState(false);
 
   const popUpRef = useRef(
-    new AnimatedPopup({
-      offset: 25,
-      openingAnimation: {
-        duration: 1000,
-        easing: "easeOutElastic",
-      },
-      closingAnimation: {
-        duration: 300,
-        easing: "easeInBack",
-      },
-    })
+    new AnimatedPopup(AIR_QUALITY_SENSOR_DETAIL_POPUP_CONFIG)
   );
 
   useEffect(() => {
@@ -58,6 +40,11 @@ const CustomMap: React.FC<{ sensors: any; sensorsDetail: any }> = ({
       flyToPoint(sensors[0].geometry.coordinates);
     }
   }, [sensors, mapLoadded]);
+
+  useEffect(() => {
+    if (map.current instanceof Map) map.current.setStyle(mapStyle);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapStyle]);
 
   // const fetchStationDetail = async (name: string) => {
   //   // try {
@@ -119,7 +106,7 @@ const CustomMap: React.FC<{ sensors: any; sensorsDetail: any }> = ({
     console.log("drrraw ::: ", sensors);
     if (map.current instanceof Map && map.current.getSource) {
       const getSource: GeoJSONSource = map.current.getSource(
-        "random-points-data"
+        AIR_QUALITY_SENSORS_LAYER_CONFIG.layerName
       ) as GeoJSONSource;
       console.log("this is maped out :: ", sensors);
       if (getSource && getSource.setData) {
@@ -150,12 +137,6 @@ const CustomMap: React.FC<{ sensors: any; sensorsDetail: any }> = ({
     }
   };
 
-  const removeController = (control: Control | IControl) => {
-    if (map.current instanceof Map) {
-      // map.current.removeControl(control);
-    }
-  };
-
   const addLayerToMap = (options: any) => {
     if (map.current instanceof Map) {
       map.current.addLayer(options);
@@ -168,8 +149,6 @@ const CustomMap: React.FC<{ sensors: any; sensorsDetail: any }> = ({
     }
   };
 
-  const addFeaturePopupToMap = (feature: FeatureCollection) => {};
-
   const removeMap = () => {
     if (map.current && map.current.remove) {
       map.current.remove();
@@ -179,50 +158,32 @@ const CustomMap: React.FC<{ sensors: any; sensorsDetail: any }> = ({
   useEffect(() => {
     if (map.current) return;
     initMap({
+      ...AIR_QUALITY_MAP_INITIAL_CONFIG,
       container: mapContainer.current || "",
-      style: "mapbox://styles/mapbox/streets-v11",
-      center: [lng, lat],
-      zoom: zoom,
-      logoPosition: undefined,
-      attributionControl: false,
+      style: mapStyle,
     });
-
     addMapController(new mapboxgl.NavigationControl(), "top-right");
-    removeController(new mapboxgl.AttributionControl());
     // @ts-ignore
     if (map.current instanceof Map) {
       // @ts-ignore
       map.current.on("load", () => {
-        addSourceToMap("random-points-data", {
-          type: "geojson",
-          data: mapDataToGeoJSONObject([]) as any,
+        addSourceToMap(AIR_QUALITY_SENSORS_LAYER_CONFIG.layerName, {
+          type: AIR_QUALITY_SENSORS_LAYER_CONFIG.sourceType,
+          data: AIR_QUALITY_SENSORS_LAYER_CONFIG.defaultData,
         });
         setMapLoadded(true);
 
         addLayerToMap({
-          id: "random-points-layer",
-          source: "random-points-data",
-          type: "circle",
-          paint: {
-            "circle-color": {
-              property: "aqi",
-              stops: [
-                [0, "#2E7D32"],
-                [15, "#9E9D24"],
-                [30, "#F9A825"],
-                [55, "#D84315"],
-                [110, "#4E342E"],
-                [10000, "#0a4efc"],
-                [22000, "pink"],
-              ],
-            },
-          },
+          id: AIR_QUALITY_SENSORS_LAYER_CONFIG.layerId,
+          source: AIR_QUALITY_SENSORS_LAYER_CONFIG.layerName,
+          type: AIR_QUALITY_SENSORS_LAYER_CONFIG.layerType,
+          paint: AIR_QUALITY_SENSORS_LAYER_CONFIG.layerPaintConfig,
         });
 
         if (map.current instanceof Map) {
           map.current.on(
             "mouseenter",
-            "random-points-layer",
+            AIR_QUALITY_SENSORS_LAYER_CONFIG.layerId,
             async (e: any) => {
               if (e.features.length) {
                 const feature: FeatureCollection = e.features[0];
@@ -252,13 +213,17 @@ const CustomMap: React.FC<{ sensors: any; sensorsDetail: any }> = ({
             }
           );
 
-          map.current.on("mouseleave", "random-points-layer", (e: any) => {
-            try {
-              popUpRef.current.remove();
-            } catch (error) {
-              console.log("this is errrrrrror :: ", error);
+          map.current.on(
+            "mouseleave",
+            AIR_QUALITY_SENSORS_LAYER_CONFIG.layerId,
+            (e: any) => {
+              try {
+                popUpRef.current.remove();
+              } catch (error) {
+                console.log("this is errrrrrror :: ", error);
+              }
             }
-          });
+          );
         }
       });
     }

@@ -77,7 +77,13 @@ const Home: React.FC = () => {
             </SwitchButtonWrapper>
           </div>
         </div>
-        <CustomMap sensors={sensors} sensorsDetail={sensorsDetail} />
+        <CustomMap
+          sensors={sensors}
+          sensorsDetail={sensorsDetail}
+          // style: "mapbox://styles/mapbox/dark-v10",
+          // style: "mapbox://styles/mapbox/light-v10",
+          mapStyle="mapbox://styles/mapbox/navigation-night-v1"
+        />
         <SettingsFloatingMneu />
       </HomeContainer>
     </>
