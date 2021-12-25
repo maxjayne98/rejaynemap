@@ -10,6 +10,7 @@ import {
   selectSensors,
   selectSensorsDetail,
 } from "redux/airQualitySensor/selector";
+import { selectThemeName } from "redux/theme/selector";
 import {
   fetchSensors,
   fetchSensorsDetail,
@@ -19,7 +20,7 @@ import {
   SwitchButtonWrapper,
   SwitchButtonWrapperLabel,
 } from "./Elements";
-
+import { mapStyles } from "utils";
 import SettingsFloatingMneu from "components/HomePage/SettingsFloatingMenu/SettingsFloatingMenu";
 import SwitchButton from "components/ToolBox/SwitchButton";
 import CustomMap from "components/HomePage/CustomMap";
@@ -30,6 +31,8 @@ const Home: React.FC = () => {
   const [poolingELid, setPoolinELid] = useState<NodeJS.Timer>();
   const sensors = useAppSelector(selectSensors);
   const sensorsDetail = useAppSelector(selectSensorsDetail);
+  const themeName = useAppSelector(selectThemeName);
+  const mapStyle = mapStyles[themeName];
 
   useEffect(() => {
     if (check) {
@@ -82,7 +85,8 @@ const Home: React.FC = () => {
           sensorsDetail={sensorsDetail}
           // style: "mapbox://styles/mapbox/dark-v10",
           // style: "mapbox://styles/mapbox/light-v10",
-          mapStyle="mapbox://styles/mapbox/navigation-night-v1"
+          // mapStyle="mapbox://styles/mapbox/navigation-night-v1"
+          mapStyle={mapStyle}
         />
         <SettingsFloatingMneu />
       </HomeContainer>

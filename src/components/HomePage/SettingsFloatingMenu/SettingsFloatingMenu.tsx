@@ -84,17 +84,17 @@ function SettingsFloatingMenu({}: Props): ReactElement {
               bgColor={dimTheme.body}
               onClick={handleThemeItemOnClick}
               isSelected={true}
-              name="light"
+              name="dim"
             >
-              LIGHT
+              DIM
             </ThemeItem>
             <ThemeItem
               bgColor={lightTheme.body}
               onClick={handleThemeItemOnClick}
               isSelected={false}
-              name="dim"
+              name="light"
             >
-              DIM
+              LIGHT
             </ThemeItem>
           </StylePickerContainer>
         </FloatingMenu>

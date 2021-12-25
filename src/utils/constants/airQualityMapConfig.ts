@@ -1,7 +1,8 @@
 import { MapboxOptions } from "mapbox-gl";
+import { ThemeKey } from "model";
+
 export const MAP_BOX_TOKEN = process.env
   .REACT_APP_MAP_BOX_ACCESS_TOKEN as string;
-
 export const AIR_QUALITY_SENSORS_LAYER_CONFIG = {
   layerName: "aqcin_sensors_layer",
   layerId: "aqcin_sensors_layer_id",
@@ -50,4 +51,10 @@ export const AIR_QUALITY_MAP_INITIAL_CONFIG: MapboxOptions = {
   zoom: 9,
   logoPosition: undefined,
   attributionControl: false,
+};
+
+export const mapStyles: { [key in ThemeKey]: string } = {
+  dark: "mapbox://styles/mapbox/dark-v10",
+  light: "mapbox://styles/mapbox/light-v10",
+  dim: "mapbox://styles/mapbox/navigation-night-v1",
 };
