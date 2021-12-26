@@ -3,6 +3,35 @@ import { ThemeKey } from "model";
 
 export const MAP_BOX_TOKEN = process.env
   .REACT_APP_MAP_BOX_ACCESS_TOKEN as string;
+
+export const UNAVAILABLE_PM25_SENSOR_DATA = 22000;
+
+export const PM25_LAYER_STOPS = {
+  Excellent: {
+    color: "#2E7D32",
+    period: [0, 15],
+  },
+  Good: {
+    color: "#9E9D24",
+    period: [15, 30],
+  },
+  Moderate: {
+    color: "#F9A825",
+    period: [30, 55],
+  },
+  Unhealthy: {
+    color: "#D84315",
+    period: [55, 110],
+  },
+  "Extremly Unhealthy": {
+    color: "#4E342E",
+    period: [110, 1100],
+  },
+  "Detail is Unavailable": {
+    period: [1100, "above"],
+    color: "pink",
+  },
+};
 export const AIR_QUALITY_SENSORS_LAYER_CONFIG = {
   layerName: "aqcin_sensors_layer",
   layerId: "aqcin_sensors_layer_id",
@@ -12,15 +41,19 @@ export const AIR_QUALITY_SENSORS_LAYER_CONFIG = {
   layerPaintConfig: {
     "circle-color": {
       property: "aqi",
-      stops: [
-        [0, "#2E7D32"],
-        [15, "#9E9D24"],
-        [30, "#F9A825"],
-        [55, "#D84315"],
-        [110, "#4E342E"],
-        [10000, "#0a4efc"],
-        [22000, "pink"],
-      ],
+      // stops: [
+      //   [0, "#2E7D32"],
+      //   [15, "#9E9D24"],
+      //   [30, "#F9A825"],
+      //   [55, "#D84315"],
+      //   [110, "#4E342E"],
+      //   [10000, "#0a4efc"],
+      //   [22000, "pink"],
+      // ],
+      stops: Object.values(PM25_LAYER_STOPS).map((level) => [
+        level.period[0],
+        level.color,
+      ]),
     },
     "circle-radius": 8,
     "circle-stroke-width": 2,

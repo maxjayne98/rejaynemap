@@ -19,11 +19,25 @@ import {
   HomeContainer,
   SwitchButtonWrapper,
   SwitchButtonWrapperLabel,
+  MapLegendIcon,
 } from "./Elements";
 import { mapStyles } from "utils";
 import SettingsFloatingMneu from "components/HomePage/SettingsFloatingMenu/SettingsFloatingMenu";
 import SwitchButton from "components/ToolBox/SwitchButton";
 import CustomMap from "components/HomePage/CustomMap";
+import MapLegend from "components/HomePage/MapLegend";
+import { PM25_LAYER_STOPS } from "utils";
+
+const legendOptions = Object.keys(PM25_LAYER_STOPS).map((level: string) => ({
+  name: level,
+  tip:
+    level === "Detail is Unavailable"
+      ? ""
+      : //@ts-ignore
+        `(${PM25_LAYER_STOPS[level].period[0]} - ${PM25_LAYER_STOPS[level].period[1]})`,
+  //@ts-ignore
+  element: <MapLegendIcon color={PM25_LAYER_STOPS[level].color} />,
+}));
 
 const Home: React.FC = () => {
   const [check, setCheck] = useState(false);
@@ -66,8 +80,8 @@ const Home: React.FC = () => {
           <div
             style={{
               position: "absolute",
-              top: "10px",
-              left: "10px",
+              top: "1rem",
+              left: "1rem",
               zIndex: 1000,
             }}
           >
@@ -89,6 +103,23 @@ const Home: React.FC = () => {
           mapStyle={mapStyle}
         />
         <SettingsFloatingMneu />
+        <div style={{ position: "relative" }}>
+          <div
+            style={{
+              position: "absolute",
+              bottom: "1rem",
+              right: "1rem",
+              zIndex: 1000,
+            }}
+          >
+            <MapLegend
+              info={{
+                title: "AQICN MAP GUIDE",
+                options: legendOptions,
+              }}
+            />
+          </div>
+        </div>
       </HomeContainer>
     </>
   );
