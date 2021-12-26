@@ -16,7 +16,11 @@ import {
   AIR_QUALITY_SENSOR_DETAIL_POPUP_CONFIG,
   MAP_BOX_TOKEN,
   AIR_QUALITY_MAP_INITIAL_CONFIG,
+  mapStyles,
+  isSameObject,
 } from "utils";
+import { useIsMount } from "hooks/useIsMount";
+import { usePrevious } from "hooks/usePrevious";
 import "./CustomMap.css";
 
 mapboxgl.accessToken = MAP_BOX_TOKEN;
@@ -24,38 +28,50 @@ mapboxgl.accessToken = MAP_BOX_TOKEN;
 const CustomMap: React.FC<{
   sensors: any;
   sensorsDetail: any;
-  mapStyle: string;
-}> = ({ sensors, sensorsDetail, mapStyle }) => {
+  themeName: "light" | "dark" | "dim";
+}> = ({ sensors, sensorsDetail, themeName }) => {
   const mapContainer = useRef<HTMLDivElement>();
   const map = useRef<Map | null>(null);
+  const [isMapInitiated, setIsMapInitiated] = useState(false);
+  const isStyleLoadedRef = useRef(false);
   const [mapLoadded, setMapLoadded] = useState(false);
-
+  const pervSensors = usePrevious(sensors);
   const popUpRef = useRef(
     new AnimatedPopup(AIR_QUALITY_SENSOR_DETAIL_POPUP_CONFIG)
   );
 
   useEffect(() => {
-    drawSensorsOnMap(mapDataToGeoJSONObject(sensors));
-    if (sensors.length && sensors[0].geometry) {
-      flyToPoint(sensors[0].geometry.coordinates);
+    if (mapLoadded) {
+      if (map.current instanceof Map && !isSameObject(sensors, pervSensors))
+        setAirQualitySensorOnMap(mapDataToGeoJSONObject(sensors));
+      if (sensors.length && sensors[0].geometry) {
+        flyToPoint(sensors[0].geometry.coordinates);
+      }
     }
   }, [sensors, mapLoadded]);
 
-  useEffect(() => {
-    if (map.current instanceof Map) map.current.setStyle(mapStyle);
+  useIsMount(() => {
+    if (map.current instanceof Map) map.current.setStyle(mapStyles[themeName]);
+    isStyleLoadedRef.current = false;
+    setMapLoadded(false);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mapStyle]);
+  }, [themeName]);
 
   useEffect(() => {
+    mapLoadded && drawSensorOnMap();
+  }, [sensorsDetail, mapLoadded]);
+
+  const drawSensorOnMap = () => {
     const combinedDataValues: any = Object.values(sensorsDetail)
       .filter((sensorDetail: any) => sensorDetail.data)
       .map((sensorDetail: any) => sensorDetail.data);
-    drawSensorsOnMap(
+    setAirQualitySensorOnMap(
       mapDataToGeoJSONObject(mapSensorsDataToGeoJSON(combinedDataValues))
     );
-  }, [sensorsDetail]);
+  };
 
-  const drawSensorsOnMap = (sensors: {
+  const setAirQualitySensorOnMap = (sensors: {
     type: string;
     features: Array<any>;
   }) => {
@@ -65,6 +81,8 @@ const CustomMap: React.FC<{
       ) as GeoJSONSource;
       if (getSource && getSource.setData) {
         getSource.setData(sensors as any);
+      } else {
+        console.log("air quality source is not found !!", getSource);
       }
     }
   };
@@ -113,26 +131,46 @@ const CustomMap: React.FC<{
     initMap({
       ...AIR_QUALITY_MAP_INITIAL_CONFIG,
       container: mapContainer.current || "",
-      style: mapStyle,
+      style: mapStyles[themeName],
     });
     addMapController(new mapboxgl.NavigationControl(), "top-right");
-    // @ts-ignore
-    if (map.current instanceof Map) {
+    if (!isMapInitiated) setIsMapInitiated(true);
+    return () => {
+      removeMap();
+    };
+  }, []);
+
+  const addPM25SourceAndData = () => {
+    addSourceToMap(AIR_QUALITY_SENSORS_LAYER_CONFIG.layerName, {
+      type: AIR_QUALITY_SENSORS_LAYER_CONFIG.sourceType,
+      data: AIR_QUALITY_SENSORS_LAYER_CONFIG.defaultData,
+    });
+    addLayerToMap({
+      id: AIR_QUALITY_SENSORS_LAYER_CONFIG.layerId,
+      source: AIR_QUALITY_SENSORS_LAYER_CONFIG.layerName,
+      type: AIR_QUALITY_SENSORS_LAYER_CONFIG.layerType,
+      paint: AIR_QUALITY_SENSORS_LAYER_CONFIG.layerPaintConfig,
+    });
+    setMapLoadded(true);
+  };
+
+  useEffect(() => {
+    if (map.current instanceof Map && isMapInitiated) {
       // @ts-ignore
       map.current.on("load", () => {
-        addSourceToMap(AIR_QUALITY_SENSORS_LAYER_CONFIG.layerName, {
-          type: AIR_QUALITY_SENSORS_LAYER_CONFIG.sourceType,
-          data: AIR_QUALITY_SENSORS_LAYER_CONFIG.defaultData,
-        });
-        setMapLoadded(true);
-
-        addLayerToMap({
-          id: AIR_QUALITY_SENSORS_LAYER_CONFIG.layerId,
-          source: AIR_QUALITY_SENSORS_LAYER_CONFIG.layerName,
-          type: AIR_QUALITY_SENSORS_LAYER_CONFIG.layerType,
-          paint: AIR_QUALITY_SENSORS_LAYER_CONFIG.layerPaintConfig,
-        });
-
+        // console.log("map is loaded :::: ");
+        // addSourceToMap(AIR_QUALITY_SENSORS_LAYER_CONFIG.layerName, {
+        //   type: AIR_QUALITY_SENSORS_LAYER_CONFIG.sourceType,
+        //   data: AIR_QUALITY_SENSORS_LAYER_CONFIG.defaultData,
+        // });
+        // addLayerToMap({
+        //   id: AIR_QUALITY_SENSORS_LAYER_CONFIG.layerId,
+        //   source: AIR_QUALITY_SENSORS_LAYER_CONFIG.layerName,
+        //   type: AIR_QUALITY_SENSORS_LAYER_CONFIG.layerType,
+        //   paint: AIR_QUALITY_SENSORS_LAYER_CONFIG.layerPaintConfig,
+        // });
+        // setMapLoadded(true);
+        // addPM25SourceAndData();
         if (map.current instanceof Map) {
           map.current.on(
             "mouseenter",
@@ -141,7 +179,6 @@ const CustomMap: React.FC<{
               if (e.features.length) {
                 const feature: FeatureCollection = e.features[0];
                 const popupNode = document.createElement("div");
-
                 ReactDOM.render(
                   <CustomPopUp feature={feature} detail={feature.properties} />,
                   popupNode
@@ -153,7 +190,6 @@ const CustomMap: React.FC<{
                 while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
                   coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
                 }
-
                 try {
                   popUpRef.current
                     .setLngLat(coordinates)
@@ -165,7 +201,6 @@ const CustomMap: React.FC<{
               }
             }
           );
-
           map.current.on(
             "mouseleave",
             AIR_QUALITY_SENSORS_LAYER_CONFIG.layerId,
@@ -179,12 +214,15 @@ const CustomMap: React.FC<{
           );
         }
       });
+      map.current.on("styledata", () => {
+        if (!isStyleLoadedRef.current) {
+          console.log("&&&");
+          isStyleLoadedRef.current = true;
+          addPM25SourceAndData();
+        }
+      });
     }
-
-    return () => {
-      removeMap();
-    };
-  }, []);
+  }, [isMapInitiated]);
 
   return (
     <>

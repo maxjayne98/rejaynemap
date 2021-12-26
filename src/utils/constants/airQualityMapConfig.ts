@@ -41,15 +41,6 @@ export const AIR_QUALITY_SENSORS_LAYER_CONFIG = {
   layerPaintConfig: {
     "circle-color": {
       property: "aqi",
-      // stops: [
-      //   [0, "#2E7D32"],
-      //   [15, "#9E9D24"],
-      //   [30, "#F9A825"],
-      //   [55, "#D84315"],
-      //   [110, "#4E342E"],
-      //   [10000, "#0a4efc"],
-      //   [22000, "pink"],
-      // ],
       stops: Object.values(PM25_LAYER_STOPS).map((level) => [
         level.period[0],
         level.color,

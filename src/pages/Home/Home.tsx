@@ -112,10 +112,7 @@ const Home: React.FC = () => {
             <CustomMap
               sensors={sensors}
               sensorsDetail={sensorsDetail}
-              // style: "mapbox://styles/mapbox/dark-v10",
-              // style: "mapbox://styles/mapbox/light-v10",
-              // mapStyle="mapbox://styles/mapbox/navigation-night-v1"
-              mapStyle={mapStyle}
+              themeName={themeName}
             />
 
             <SettingsFloatingMneu />
