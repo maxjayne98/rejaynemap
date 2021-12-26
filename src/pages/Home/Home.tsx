@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from "redux/hooks";
 import {
   selectSensors,
   selectSensorsDetail,
+  selectIsSensorsLoading,
 } from "redux/airQualitySensor/selector";
 import { selectThemeName } from "redux/theme/selector";
 import {
@@ -20,6 +21,8 @@ import {
   SwitchButtonWrapper,
   SwitchButtonWrapperLabel,
   MapLegendIcon,
+  FullPageLoadingContainer,
+  FullPageLoadingContent,
 } from "./Elements";
 import { mapStyles } from "utils";
 import SettingsFloatingMneu from "components/HomePage/SettingsFloatingMenu/SettingsFloatingMenu";
@@ -27,6 +30,7 @@ import SwitchButton from "components/ToolBox/SwitchButton";
 import CustomMap from "components/HomePage/CustomMap";
 import MapLegend from "components/HomePage/MapLegend";
 import { PM25_LAYER_STOPS } from "utils";
+import Loading from "components/Lottie";
 
 const legendOptions = Object.keys(PM25_LAYER_STOPS).map((level: string) => ({
   name: level,
@@ -45,6 +49,7 @@ const Home: React.FC = () => {
   const [poolingELid, setPoolinELid] = useState<NodeJS.Timer>();
   const sensors = useAppSelector(selectSensors);
   const sensorsDetail = useAppSelector(selectSensorsDetail);
+  const isSensorsLoading = useAppSelector(selectIsSensorsLoading);
   const themeName = useAppSelector(selectThemeName);
   const mapStyle = mapStyles[themeName];
 
@@ -75,52 +80,65 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <HomeContainer>
-        <div style={{ position: "relative" }}>
-          <div
-            style={{
-              position: "absolute",
-              top: "1rem",
-              left: "1rem",
-              zIndex: 1000,
-            }}
-          >
-            <SwitchButtonWrapper>
-              <div>
-                <SwitchButtonWrapperLabel>Auto </SwitchButtonWrapperLabel>
-                <SwitchButtonWrapperLabel>Update</SwitchButtonWrapperLabel>
+      {isSensorsLoading ? (
+        <>
+          <FullPageLoadingContainer>
+            <FullPageLoadingContent>
+              <Loading />
+            </FullPageLoadingContent>
+          </FullPageLoadingContainer>
+        </>
+      ) : (
+        <>
+          <HomeContainer>
+            <div style={{ position: "relative" }}>
+              <div
+                style={{
+                  position: "absolute",
+                  top: "1rem",
+                  left: "1rem",
+                  zIndex: 1000,
+                }}
+              >
+                <SwitchButtonWrapper>
+                  <div>
+                    <SwitchButtonWrapperLabel>Auto </SwitchButtonWrapperLabel>
+                    <SwitchButtonWrapperLabel>Update</SwitchButtonWrapperLabel>
+                  </div>
+                  <SwitchButton onClick={checkBoxButtonOnChange} />
+                </SwitchButtonWrapper>
               </div>
-              <SwitchButton onClick={checkBoxButtonOnChange} />
-            </SwitchButtonWrapper>
-          </div>
-        </div>
-        <CustomMap
-          sensors={sensors}
-          sensorsDetail={sensorsDetail}
-          // style: "mapbox://styles/mapbox/dark-v10",
-          // style: "mapbox://styles/mapbox/light-v10",
-          // mapStyle="mapbox://styles/mapbox/navigation-night-v1"
-          mapStyle={mapStyle}
-        />
-        <SettingsFloatingMneu />
-        <div style={{ position: "relative" }}>
-          <div
-            style={{
-              position: "absolute",
-              bottom: "1rem",
-              right: "1rem",
-              zIndex: 1000,
-            }}
-          >
-            <MapLegend
-              info={{
-                title: "AQICN MAP GUIDE",
-                options: legendOptions,
-              }}
+            </div>
+            <CustomMap
+              sensors={sensors}
+              sensorsDetail={sensorsDetail}
+              // style: "mapbox://styles/mapbox/dark-v10",
+              // style: "mapbox://styles/mapbox/light-v10",
+              // mapStyle="mapbox://styles/mapbox/navigation-night-v1"
+              mapStyle={mapStyle}
             />
-          </div>
-        </div>
-      </HomeContainer>
+
+            <SettingsFloatingMneu />
+            <div style={{ position: "relative" }}>
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "1rem",
+                  right: "1rem",
+                  zIndex: 1000,
+                }}
+              >
+                <MapLegend
+                  info={{
+                    title: "AQICN MAP GUIDE",
+                    options: legendOptions,
+                  }}
+                />
+              </div>
+            </div>
+          </HomeContainer>
+        </>
+      )}
     </>
   );
 };

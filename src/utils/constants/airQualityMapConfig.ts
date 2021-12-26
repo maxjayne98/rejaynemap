@@ -25,7 +25,7 @@ export const PM25_LAYER_STOPS = {
   },
   "Extremly Unhealthy": {
     color: "#4E342E",
-    period: [110, 1100],
+    period: [110, "above"],
   },
   "Detail is Unavailable": {
     period: [1100, "above"],

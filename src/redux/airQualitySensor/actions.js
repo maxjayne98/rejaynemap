@@ -9,6 +9,7 @@ export const fetchSensors =
   (northWestern = [0, 0], southEastern = [0, 0]) =>
   async (dispatch) => {
     // Fetch the backend endpoint:
+    dispatch(airQualitySensorActions.setIsSensorsLoading(true));
     try {
       const { data } = await api.getSensorsWithBoundingBox(
         northWestern,
@@ -30,6 +31,7 @@ export const fetchSensors =
     } catch (e) {
       console.log("this is errror :::");
     }
+    dispatch(airQualitySensorActions.setIsSensorsLoading(false));
   };
 
 export const fetchSensorsDetail = (sensorsName) => async (dispatch) => {
