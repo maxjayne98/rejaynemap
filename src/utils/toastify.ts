@@ -1,3 +1,4 @@
+import { ReactText } from "react";
 import { toast } from "react-toastify";
 import type { ToastOptions } from "react-toastify";
 
@@ -5,7 +6,7 @@ export const customToast = (
   type: "info" | "success" | "warning" | "error",
   message: string,
   options?: ToastOptions
-): void => {
+): (() => ReactText) => {
   const defuaultConf: ToastOptions = {
     position: "bottom-center",
     autoClose: 5000,
@@ -16,5 +17,6 @@ export const customToast = (
     progress: undefined,
     theme: "colored",
   };
-  toast[type](message, { ...defuaultConf, ...options });
+  const showToast = () => toast[type](message, { ...defuaultConf, ...options });
+  return showToast;
 };
