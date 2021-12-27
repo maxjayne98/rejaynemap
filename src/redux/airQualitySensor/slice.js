@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 const initialState = {
   sensors: [],
-  isSensorsLoading: true,
+  isSensorsLoading: false,
   sensorsDetail: {},
 };
 

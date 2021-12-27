@@ -31,6 +31,7 @@ import CustomMap from "components/HomePage/CustomMap";
 import MapLegend from "components/HomePage/MapLegend";
 import { PM25_LAYER_STOPS } from "utils";
 import Loading from "components/Lottie";
+import ToolBox from "components/HomePage/ToolBox";
 
 const legendOptions = Object.keys(PM25_LAYER_STOPS).map((level: string) => ({
   name: level,
@@ -70,11 +71,11 @@ const Home: React.FC = () => {
     if (sensorsName.length) dispatch(fetchSensorsDetail(sensorsName));
   }, [sensors]);
 
-  useEffect(() => {
-    dispatch(fetchSensors([52.335214, 4.803647], [52.404388, 5.00861]));
-  }, []);
+  // useEffect(() => {
+  //   dispatch(fetchSensors([52.335214, 4.803647], [52.404388, 5.00861]));
+  // }, []);
 
-  const checkBoxButtonOnChange = useCallback(() => {
+  const checkButtonOnChange = useCallback(() => {
     setCheck((check) => !check);
   }, [setCheck]);
 
@@ -91,48 +92,15 @@ const Home: React.FC = () => {
       ) : (
         <>
           <HomeContainer>
-            <div style={{ position: "relative" }}>
-              <div
-                style={{
-                  position: "absolute",
-                  top: "1rem",
-                  left: "1rem",
-                  zIndex: 1000,
-                }}
-              >
-                <SwitchButtonWrapper>
-                  <div>
-                    <SwitchButtonWrapperLabel>Auto </SwitchButtonWrapperLabel>
-                    <SwitchButtonWrapperLabel>Update</SwitchButtonWrapperLabel>
-                  </div>
-                  <SwitchButton onClick={checkBoxButtonOnChange} />
-                </SwitchButtonWrapper>
-              </div>
-            </div>
+            <ToolBox
+              checkButtonOnChange={checkButtonOnChange}
+              legendOptions={legendOptions}
+            />
             <CustomMap
               sensors={sensors}
               sensorsDetail={sensorsDetail}
               themeName={themeName}
             />
-
-            <SettingsFloatingMneu />
-            <div style={{ position: "relative" }}>
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: "1rem",
-                  right: "1rem",
-                  zIndex: 1000,
-                }}
-              >
-                <MapLegend
-                  info={{
-                    title: "AQICN MAP GUIDE",
-                    options: legendOptions,
-                  }}
-                />
-              </div>
-            </div>
           </HomeContainer>
         </>
       )}
