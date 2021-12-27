@@ -39,67 +39,58 @@ function SettingsFloatingMenu({}: Props): ReactElement {
     dispatch(toggleTheme(event.target.name));
 
   return (
-    <div style={{ position: "relative" }}>
-      <div
-        style={{
-          position: "absolute",
-          bottom: "10px",
-          left: "10px",
-          zIndex: 1000,
-        }}
-      >
-        <FloatingMenu icon={FloatingMenuIcons}>
-          <label>color pallete !!</label>
-          <StylePickerContainer>
-            <ColorPalleteItem
-              color={greenCollorPallet.primary}
-              isSelected={false}
-              name="green"
-              onClick={handleColorPalleteItemOnClick}
-            />
-            <ColorPalleteItem
-              color={violetCollorPallet.primary}
-              isSelected={false}
-              name="violet"
-              onClick={handleColorPalleteItemOnClick}
-            />
-            <ColorPalleteItem
-              color={blueCollorPallet.primary}
-              isSelected={true}
-              name="blue"
-              onClick={handleColorPalleteItemOnClick}
-            />
-          </StylePickerContainer>
-          <label>theme pallete !!</label>
-          <StylePickerContainer>
-            <ThemeItem
-              bgColor={darkTheme.body}
-              onClick={handleThemeItemOnClick}
-              isSelected={false}
-              name="dark"
-            >
-              DARK
-            </ThemeItem>
-            <ThemeItem
-              bgColor={dimTheme.body}
-              onClick={handleThemeItemOnClick}
-              isSelected={true}
-              name="dim"
-            >
-              DIM
-            </ThemeItem>
-            <ThemeItem
-              bgColor={lightTheme.body}
-              onClick={handleThemeItemOnClick}
-              isSelected={false}
-              name="light"
-            >
-              LIGHT
-            </ThemeItem>
-          </StylePickerContainer>
-        </FloatingMenu>
-      </div>
-    </div>
+    <>
+      <FloatingMenu icon={FloatingMenuIcons}>
+        <label>color pallete !!</label>
+        <StylePickerContainer>
+          <ColorPalleteItem
+            color={greenCollorPallet.primary}
+            isSelected={false}
+            name="green"
+            onClick={handleColorPalleteItemOnClick}
+          />
+          <ColorPalleteItem
+            color={violetCollorPallet.primary}
+            isSelected={false}
+            name="violet"
+            onClick={handleColorPalleteItemOnClick}
+          />
+          <ColorPalleteItem
+            color={blueCollorPallet.primary}
+            isSelected={true}
+            name="blue"
+            onClick={handleColorPalleteItemOnClick}
+          />
+        </StylePickerContainer>
+        <label>theme pallete !!</label>
+        <StylePickerContainer>
+          <ThemeItem
+            bgColor={darkTheme.body}
+            onClick={handleThemeItemOnClick}
+            isSelected={false}
+            name="dark"
+          >
+            DARK
+          </ThemeItem>
+          <ThemeItem
+            bgColor={dimTheme.body}
+            onClick={handleThemeItemOnClick}
+            isSelected={true}
+            name="dim"
+          >
+            DIM
+          </ThemeItem>
+          <ThemeItem
+            bgColor={lightTheme.body}
+            onClick={handleThemeItemOnClick}
+            isSelected={false}
+            name="light"
+          >
+            LIGHT
+          </ThemeItem>
+        </StylePickerContainer>
+      </FloatingMenu>
+    </>
   );
 }
 
