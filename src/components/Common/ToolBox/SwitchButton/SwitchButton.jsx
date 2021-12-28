@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
-import "./SwitchButton.css";
+import { Toggle, ToggleWrapper, SimpleInput } from "./SwitchButtonElements";
 
 function SwitchButton({ onClick }) {
   return (
     <>
-      <input type="checkbox" id="toggle" onClick={onClick} />
-      <label htmlFor="toggle" className="toggleWrapper">
-        <div className="toggle"></div>
-      </label>
+      <SimpleInput type="checkbox" id="toggle" onClick={onClick} />
+      <ToggleWrapper htmlFor="toggle">
+        <Toggle />
+      </ToggleWrapper>
     </>
   );
 }
