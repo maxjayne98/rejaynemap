@@ -34,20 +34,50 @@ export const fetchSensors =
     dispatch(airQualitySensorActions.setIsSensorsLoading(false));
   };
 
-export const fetchSensorsDetail = (sensorsName) => async (dispatch) => {
-  console.log("each city 1");
-  const combinedData = {};
-  for (const name of sensorsName) {
+async function doSomeThing(name, tried, until) {
+  if (tried < until) {
     try {
-      const { data } = await api.getSensorDetailByName(name);
-      dispatch(
-        airQualitySensorActions.updateSensorDetail({
+      const response = await api.getSensorDetailByName(name);
+      return response;
+    } catch (e) {
+      tried++;
+      return doSomeThing(name, tried, until);
+    }
+  }
+}
+
+function retry(name, tried, until) {
+  return async () => {
+    return await doSomeThing(name, tried, until);
+  };
+}
+
+export const fetchSensorsDetail = (sensorsName) => async (dispatch) => {
+  for (let i = 0; i < sensorsName.length; i += 3) {
+    const sensors = sensorsName.slice(i, i + 3);
+    await (async (sensors, dispatch) => {
+      const chunk = sensors.map((name) => {
+        return retry(name, 0, 3)();
+      });
+      try {
+        const responses = await Promise.all(chunk);
+        const sesorsDetail = responses.map(({ data }) => ({
           sensorName: data.data.city.name,
           sensorData: data.data,
-        })
-      );
-      combinedData[data.data.city.name] = data.data;
-    } catch (e) {}
+        }));
+        dispatch(airQualitySensorActions.updateSensorsDetail(sesorsDetail));
+      } catch (e) {}
+    })(sensors, dispatch);
   }
-  console.log("got compelete !!!!!");
+  // for (const name of sensorsName) {
+  //   try {
+  //     const { data } = await api.getSensorDetailByName(name);
+  //     dispatch(
+  //       airQualitySensorActions.updateSensorDetail({
+  //         sensorName: data.data.city.name,
+  //         sensorData: data.data,
+  //       })
+  //     );
+  //   } catch (e) {}
+  // }
 };

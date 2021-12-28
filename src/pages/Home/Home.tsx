@@ -53,7 +53,6 @@ const Home: React.FC = () => {
   const isSensorsLoading = useAppSelector(selectIsSensorsLoading);
   const themeName = useAppSelector(selectThemeName);
   const mapStyle = mapStyles[themeName];
-
   useEffect(() => {
     if (check) {
       const id: NodeJS.Timer = setInterval(() => {
@@ -71,9 +70,9 @@ const Home: React.FC = () => {
     if (sensorsName.length) dispatch(fetchSensorsDetail(sensorsName));
   }, [sensors]);
 
-  // useEffect(() => {
-  //   dispatch(fetchSensors([52.335214, 4.803647], [52.404388, 5.00861]));
-  // }, []);
+  useEffect(() => {
+    dispatch(fetchSensors([52.335214, 4.803647], [52.404388, 5.00861]));
+  }, []);
 
   const checkButtonOnChange = useCallback(() => {
     setCheck((check) => !check);

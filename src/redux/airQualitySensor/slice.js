@@ -22,6 +22,11 @@ const airQualitySensorSlice = createSlice({
       state.sensorsDetail[action.payload.sensorName].data =
         action.payload.sensorData;
     },
+    updateSensorsDetail: (state, action) => {
+      action.payload.forEach(({ sensorName, sensorData }) => {
+        state.sensorsDetail[sensorName].data = sensorData;
+      });
+    },
   },
 });
 
