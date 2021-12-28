@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import {
   FloatingMenuWrapper,
-  FloatingMenuCheckBox,
   FloatingMenuLabel,
   FloatingMenuContentsContainer,
   FloatingMenuContentItem,
 } from "./FloatingMenuElements";
 
 type Props = {
-  icon: any;
+  icon: React.ReactNode;
+  children: React.ReactNode;
 };
 
 const FloatingMenu: React.FC<Props> = ({ children, icon }) => {
@@ -16,7 +16,6 @@ const FloatingMenu: React.FC<Props> = ({ children, icon }) => {
   return (
     <>
       <FloatingMenuWrapper>
-        {/* <FloatingMenuCheckBox type="checkbox" id="toggle-floating-menu" /> */}
         <FloatingMenuLabel
           htmlFor="toggle-floating-menu"
           onClick={() => setState((state) => !state)}

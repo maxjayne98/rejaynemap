@@ -18,8 +18,8 @@ interface Props {
 }
 
 const MapLegend: React.FC<Props> = ({ info }) => {
-  const items = info.options.map(({ name, tip, element }) => (
-    <MapLegendItem>
+  const items = info.options.map(({ name, tip, element }, index) => (
+    <MapLegendItem key={index}>
       <MapLegendItemLabel>
         <MapLegendName>{name}</MapLegendName>
         <MapLegendTip>{tip}</MapLegendTip>
