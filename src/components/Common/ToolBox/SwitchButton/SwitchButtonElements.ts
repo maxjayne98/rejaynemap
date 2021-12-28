@@ -1,3 +1,4 @@
+import { AppTheme } from "model";
 import styled, { keyframes } from "styled-components";
 
 const redAnimation = keyframes`
@@ -11,16 +12,16 @@ const redAnimation = keyframes`
     width: 22px;
     border-width: 6px;
   }
-  70% {
+  /* 70% {
     height: 10px;
     width: 10px;
     border-width: 6px;
-  }
-  85% {
+  } */
+  /* 85% {
     height: 10px;
     width: 20px;
     border-width: 6px;
-  }
+  } */
   100% {
     height: 15px;
     width: 15px;
@@ -67,7 +68,7 @@ export const ToggleWrapper = styled.label`
   min-height: 5rem;
   height: 100%;
   border-radius: 50%;
-  border: 0.2rem solid white;
+  border: 0.2rem solid ${({ theme }: { theme: AppTheme }) => theme.text1};
 
   &:active {
     box-shadow: 0 1.5rem 1.5rem 0 rgba(254, 69, 81, 0.5);
@@ -82,10 +83,10 @@ export const ToggleWrapper = styled.label`
     height: 1.5rem;
     width: 1rem.5rem;
     background-color: transparent;
-    border: 0.6rem solid #fff;
+    border: 0.6rem solid ${({ theme }: { theme: AppTheme }) => theme.text1};
     border-radius: 50%;
     cursor: pointer;
-    animation: ${redAnimation} 0.7s linear forwards;
+    animation: ${redAnimation} 0.5s linear forwards;
     padding: 0;
     box-sizing: content-box;
   }
@@ -106,6 +107,6 @@ export const SimpleInput = styled.input`
     background-color: #fff;
     border-color: transparent;
     border-radius: 3rem;
-    animation: ${greenAnimation} 0.7s linear forwards !important;
+    animation: ${greenAnimation} 0.5s linear forwards !important;
   }
 `;
