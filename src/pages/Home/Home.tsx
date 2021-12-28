@@ -1,15 +1,10 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useReducer,
-  useCallback,
-} from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "redux/hooks";
 import {
   selectSensors,
   selectSensorsDetail,
   selectIsSensorsLoading,
+  selectFetchSensorsError,
 } from "redux/airQualitySensor/selector";
 import { selectThemeName } from "redux/theme/selector";
 import {
@@ -18,19 +13,13 @@ import {
 } from "redux/airQualitySensor/actions";
 import {
   HomeContainer,
-  SwitchButtonWrapper,
-  SwitchButtonWrapperLabel,
   MapLegendIcon,
   FullPageLoadingContainer,
   FullPageLoadingContent,
 } from "./Elements";
-import { mapStyles } from "utils";
-import SettingsFloatingMneu from "components/HomePage/SettingsFloatingMenu/SettingsFloatingMenu";
-import SwitchButton from "components/Common/ToolBox/SwitchButton";
 import CustomMap from "components/HomePage/CustomMap";
-import MapLegend from "components/HomePage/MapLegend";
 import { PM25_LAYER_STOPS } from "utils";
-import Loading from "components/Common/Lottie";
+import Loading, { ConnectionError } from "components/Common/Lottie";
 import ToolBox from "components/HomePage/ToolBox";
 
 const legendOptions = Object.keys(PM25_LAYER_STOPS).map((level: string) => ({
@@ -51,8 +40,8 @@ const Home: React.FC = () => {
   const sensors = useAppSelector(selectSensors);
   const sensorsDetail = useAppSelector(selectSensorsDetail);
   const isSensorsLoading = useAppSelector(selectIsSensorsLoading);
+  const hasSensorFetchingError = useAppSelector(selectFetchSensorsError);
   const themeName = useAppSelector(selectThemeName);
-  const mapStyle = mapStyles[themeName];
   useEffect(() => {
     if (check) {
       const id: NodeJS.Timer = setInterval(() => {
@@ -80,7 +69,15 @@ const Home: React.FC = () => {
 
   return (
     <>
-      {isSensorsLoading ? (
+      {hasSensorFetchingError ? (
+        <>
+          <FullPageLoadingContainer>
+            <FullPageLoadingContent>
+              <ConnectionError />
+            </FullPageLoadingContent>
+          </FullPageLoadingContainer>
+        </>
+      ) : isSensorsLoading ? (
         <>
           <FullPageLoadingContainer>
             <FullPageLoadingContent>

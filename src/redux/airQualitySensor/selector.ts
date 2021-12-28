@@ -6,3 +6,5 @@ export const selectIsSensorsLoading = (state: RootState) =>
   state.airQualitySensor.isSensorsLoading;
 export const selectSensorsDetail = (state: RootState) =>
   state.airQualitySensor.sensorsDetail;
+export const selectFetchSensorsError = (state: RootState) =>
+  state.airQualitySensor.fetchSensorError;
