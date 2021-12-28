@@ -29,7 +29,7 @@ export const PM25_LAYER_STOPS = {
   },
   "Detail is Unavailable": {
     period: [1100, "above"],
-    color: "pink",
+    color: "black",
   },
 };
 export const AIR_QUALITY_SENSORS_LAYER_CONFIG = {
