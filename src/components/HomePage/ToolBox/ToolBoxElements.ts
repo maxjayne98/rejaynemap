@@ -5,7 +5,7 @@ export const ToolBoxContainer = styled.div`
 `;
 export const MapLegendDesktopContainer = styled.div`
   position: fixed;
-  bottom: -19rem;
+  top: 99vh;
   transform: translateY(-100%);
   right: 1rem;
   z-index: 1000;
@@ -17,11 +17,11 @@ export const MapLegendDesktopContainer = styled.div`
 
 export const SettingsFloatingMenuContainer = styled.div`
   position: fixed;
-  bottom: -5rem;
+  top: 99vh;
   transform: translateY(-100%);
   left: 1rem;
   z-index: 1000;
   @media ${devicesMax.mobileL} {
-    bottom: 15rem;
+    top: 73vh;
   }
 `;

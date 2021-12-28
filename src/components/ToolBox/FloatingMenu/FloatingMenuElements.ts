@@ -21,10 +21,10 @@ export const FloatingMenuLabel = styled.label`
 `;
 
 export const FloatingMenuContentsContainer = styled.ul<{ isOpend: boolean }>`
-  width: 20rem;
-  height: 20rem;
+  min-width: 20rem;
+  height: auto;
   position: absolute;
-  top: -21rem;
+  top: -12rem;
   left: 0;
   z-index: -1;
   background-color: ${({ theme }) => theme.primary};
