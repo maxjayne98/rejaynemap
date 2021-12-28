@@ -1,5 +1,4 @@
 import axios from "axios";
-import { get, set } from "local-storage";
 
 export const request = axios.create({
   baseURL: process.env.REACT_APP_AQICN_API_URL,

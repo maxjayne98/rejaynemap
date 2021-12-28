@@ -14,7 +14,7 @@ import {
   AppTheme,
   ThemeKey,
 } from "model";
-import { get, set } from "local-storage";
+import { getLocalStorage, setLocalStorage } from "utils";
 
 const themePallete: ITheme = {
   dark: darkTheme,
@@ -28,8 +28,10 @@ const themeColorPallete: IColorPallete = {
   green: greenCollorPallet,
 };
 const cachedPalleteName: ColorPalleteKey =
-  (get<string>("colorPallete") as ColorPalleteKey) || "green";
-const cachedThemeName: ThemeKey = (get<string>("theme") as ThemeKey) || "light";
+  (getLocalStorage("colorPallete") as ColorPalleteKey) || "green";
+
+const cachedThemeName: ThemeKey =
+  (getLocalStorage("theme") as ThemeKey) || "light";
 
 const initialTheme = themePallete[cachedThemeName];
 
@@ -57,7 +59,7 @@ const themeSlice = createSlice({
         ...themePallete[action.payload as ThemeKey],
       };
       state.themeName = action.payload;
-      set<string>("theme", action.payload);
+      setLocalStorage("theme", action.payload);
     },
     toggleColorPallete: (state, action) => {
       state.theme = {
@@ -66,7 +68,7 @@ const themeSlice = createSlice({
       };
       state.palleteName = action.payload;
 
-      set<string>("colorPallete", action.payload);
+      setLocalStorage("colorPallete", action.payload);
     },
   },
 });
