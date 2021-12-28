@@ -158,19 +158,6 @@ const CustomMap: React.FC<{
     if (map.current instanceof Map && isMapInitiated) {
       // @ts-ignore
       map.current.on("load", () => {
-        // console.log("map is loaded :::: ");
-        // addSourceToMap(AIR_QUALITY_SENSORS_LAYER_CONFIG.layerName, {
-        //   type: AIR_QUALITY_SENSORS_LAYER_CONFIG.sourceType,
-        //   data: AIR_QUALITY_SENSORS_LAYER_CONFIG.defaultData,
-        // });
-        // addLayerToMap({
-        //   id: AIR_QUALITY_SENSORS_LAYER_CONFIG.layerId,
-        //   source: AIR_QUALITY_SENSORS_LAYER_CONFIG.layerName,
-        //   type: AIR_QUALITY_SENSORS_LAYER_CONFIG.layerType,
-        //   paint: AIR_QUALITY_SENSORS_LAYER_CONFIG.layerPaintConfig,
-        // });
-        // setMapLoadded(true);
-        // addPM25SourceAndData();
         if (map.current instanceof Map) {
           map.current.on(
             "mouseenter",

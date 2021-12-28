@@ -21,7 +21,6 @@ import CustomMap from "components/HomePage/CustomMap";
 import { PM25_LAYER_STOPS } from "utils";
 import Loading, { ConnectionError } from "components/Common/Lottie";
 import ToolBox from "components/HomePage/ToolBox";
-
 const legendOptions = Object.keys(PM25_LAYER_STOPS).map((level: string) => ({
   name: level,
   tip:
