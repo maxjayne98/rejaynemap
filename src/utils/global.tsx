@@ -8,3 +8,18 @@ export const showComponentBy10percentProb = () => {
 
 export const isSameObject = (obj1: any, obj2: any) =>
   JSON.stringify(obj1) === JSON.stringify(obj2);
+
+export async function retry(
+  asyncCallback: () => void,
+  { until = 1, tried = 0 }: { until?: number; tried?: number } = {}
+): Promise<any> {
+  try {
+    const response = await asyncCallback();
+    return response;
+  } catch (error) {
+    if (tried + 1 < until) {
+      return retry(asyncCallback, { tried: tried + 1, until });
+    }
+    throw error;
+  }
+}

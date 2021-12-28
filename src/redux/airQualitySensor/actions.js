@@ -29,35 +29,18 @@ export const fetchSensors =
       dispatch(airQualitySensorActions.setSensors(mapStationsDataInGeoJSON));
       dispatch(airQualitySensorActions.setSensorsDetail(sensorsDetail));
     } catch (e) {
-      console.log("this is errror :::");
+      console.log("this is errror :::", e);
     }
     dispatch(airQualitySensorActions.setIsSensorsLoading(false));
   };
-
-async function doSomeThing(name, tried, until) {
-  if (tried < until) {
-    try {
-      const response = await api.getSensorDetailByName(name);
-      return response;
-    } catch (e) {
-      tried++;
-      return doSomeThing(name, tried, until);
-    }
-  }
-}
-
-function retry(name, tried, until) {
-  return async () => {
-    return await doSomeThing(name, tried, until);
-  };
-}
 
 export const fetchSensorsDetail = (sensorsName) => async (dispatch) => {
   for (let i = 0; i < sensorsName.length; i += 3) {
     const sensors = sensorsName.slice(i, i + 3);
     await (async (sensors, dispatch) => {
       const chunk = sensors.map((name) => {
-        return retry(name, 0, 3)();
+        // return retry(name, 0, 3)();
+        return api.getSensorDetailByName(name);
       });
       try {
         const responses = await Promise.all(chunk);
