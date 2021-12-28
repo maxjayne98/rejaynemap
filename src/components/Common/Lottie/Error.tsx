@@ -1,5 +1,5 @@
 import Lottie from "lottie-react";
-import ErrorLottie from "../../assets/lottie/error.json";
+import ErrorLottie from "../../../assets/lottie/error.json";
 interface Props {}
 
 export const Error: React.FC = (props: Props) => {

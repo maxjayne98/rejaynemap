@@ -26,11 +26,11 @@ import {
 } from "./Elements";
 import { mapStyles } from "utils";
 import SettingsFloatingMneu from "components/HomePage/SettingsFloatingMenu/SettingsFloatingMenu";
-import SwitchButton from "components/ToolBox/SwitchButton";
+import SwitchButton from "components/Common/ToolBox/SwitchButton";
 import CustomMap from "components/HomePage/CustomMap";
 import MapLegend from "components/HomePage/MapLegend";
 import { PM25_LAYER_STOPS } from "utils";
-import Loading from "components/Lottie";
+import Loading from "components/Common/Lottie";
 import ToolBox from "components/HomePage/ToolBox";
 
 const legendOptions = Object.keys(PM25_LAYER_STOPS).map((level: string) => ({

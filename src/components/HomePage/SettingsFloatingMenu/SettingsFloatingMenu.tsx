@@ -2,9 +2,9 @@ import React, { ReactElement } from "react";
 
 import { useAppDispatch } from "redux/hooks";
 import { Close, Settings } from "@styled-icons/evaicons-solid";
-import FloatingMenu from "components/ToolBox/FloatingMenu";
+import FloatingMenu from "components/Common/ToolBox/FloatingMenu";
 import { toggleColorPallet, toggleTheme } from "redux/theme/actions";
-import RotatingIconButton from "components/ToolBox/RotatingIconButton";
+import RotatingIconButton from "components/Common/ToolBox/RotatingIconButton";
 import {
   ColorPalleteItem,
   StylePickerContainer,

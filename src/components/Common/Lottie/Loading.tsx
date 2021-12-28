@@ -1,5 +1,5 @@
 import Lottie from "lottie-react";
-import LoadingLottie from "../../assets/lottie/loading2.json";
+import LoadingLottie from "../../../assets/lottie/loading2.json";
 interface Props {}
 
 const Loading: React.FC = (props: Props) => {

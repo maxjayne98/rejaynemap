@@ -1,4 +1,4 @@
-import SwitchButton from "components/ToolBox/SwitchButton";
+import SwitchButton from "components/Common/ToolBox/SwitchButton";
 import {
   SwitchButtonWrapper,
   SwitchButtonWrapperLabel,
