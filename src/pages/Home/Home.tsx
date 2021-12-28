@@ -21,6 +21,8 @@ import CustomMap from "components/HomePage/CustomMap";
 import { PM25_LAYER_STOPS } from "utils";
 import Loading, { ConnectionError } from "components/Common/Lottie";
 import ToolBox from "components/HomePage/ToolBox";
+import { INITIAL_BOUNDING_BOX } from "utils";
+
 const legendOptions = Object.keys(PM25_LAYER_STOPS).map((level: string) => ({
   name: level,
   tip:
@@ -59,7 +61,12 @@ const Home: React.FC = () => {
   }, [sensors]);
 
   useEffect(() => {
-    dispatch(fetchSensors([52.335214, 4.803647], [52.404388, 5.00861]));
+    dispatch(
+      fetchSensors(
+        INITIAL_BOUNDING_BOX.northWestern,
+        INITIAL_BOUNDING_BOX.southEastern
+      )
+    );
   }, []);
 
   const checkButtonOnChange = useCallback(() => {

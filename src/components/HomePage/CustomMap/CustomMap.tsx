@@ -16,7 +16,7 @@ import {
   AIR_QUALITY_SENSOR_DETAIL_POPUP_CONFIG,
   MAP_BOX_TOKEN,
   AIR_QUALITY_MAP_INITIAL_CONFIG,
-  mapStyles,
+  MAP_STYLES,
   isSameObject,
 } from "utils";
 import { useIsMount } from "hooks/useIsMount";
@@ -51,7 +51,7 @@ const CustomMap: React.FC<{
   }, [sensors, mapLoadded]);
 
   useIsMount(() => {
-    if (map.current instanceof Map) map.current.setStyle(mapStyles[themeName]);
+    if (map.current instanceof Map) map.current.setStyle(MAP_STYLES[themeName]);
     isStyleLoadedRef.current = false;
     setMapLoadded(false);
 
@@ -131,7 +131,7 @@ const CustomMap: React.FC<{
     initMap({
       ...AIR_QUALITY_MAP_INITIAL_CONFIG,
       container: mapContainer.current || "",
-      style: mapStyles[themeName],
+      style: MAP_STYLES[themeName],
     });
     addMapController(new mapboxgl.NavigationControl(), "top-right");
     if (!isMapInitiated) setIsMapInitiated(true);

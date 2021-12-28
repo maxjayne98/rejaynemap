@@ -67,8 +67,6 @@ export const AIR_QUALITY_SENSOR_DETAIL_POPUP_CONFIG = {
 };
 
 export const AIR_QUALITY_MAP_INITIAL_CONFIG: MapboxOptions = {
-  // style: "mapbox://styles/mapbox/dark-v10",
-  // style: "mapbox://styles/mapbox/light-v10",
   container: "",
   style: "mapbox://styles/mapbox/navigation-night-v1",
   center: [4.803647, 52.335214],
@@ -76,8 +74,15 @@ export const AIR_QUALITY_MAP_INITIAL_CONFIG: MapboxOptions = {
   logoPosition: undefined,
   attributionControl: false,
 };
+export const INITIAL_BOUNDING_BOX: {
+  northWestern: [number, number];
+  southEastern: [number, number];
+} = {
+  northWestern: [52.335214, 4.803647],
+  southEastern: [52.404388, 5.00861],
+};
 
-export const mapStyles: { [key in ThemeKey]: string } = {
+export const MAP_STYLES: { [key in ThemeKey]: string } = {
   dark: "mapbox://styles/mapbox/dark-v10",
   light: "mapbox://styles/mapbox/light-v10",
   dim: "mapbox://styles/mapbox/navigation-night-v1",
