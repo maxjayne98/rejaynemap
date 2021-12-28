@@ -1,13 +1,12 @@
 export interface Station {
-    name: string;
-    time: Date;
+  name: string;
+  time: Date;
 }
 
 export interface StationResponse {
-    lat: number;
-    lon: number;
-    uid: number;
-    aqi: string;
-    station: Station;
+  lat: number;
+  lon: number;
+  uid: number;
+  aqi: string;
+  station: Station;
 }
-

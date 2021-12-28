@@ -1,5 +1,5 @@
-import type { RootState } from "../store";
-import { ColorPallete, ThemeKey } from "../../model";
+import type { RootState } from "redux/store";
+import { ColorPallete, ThemeKey } from "model";
 
 export const selectTheme = (state: RootState): ColorPallete =>
   state.globalTheme.theme;
