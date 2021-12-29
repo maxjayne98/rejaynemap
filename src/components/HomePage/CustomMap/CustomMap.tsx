@@ -133,7 +133,7 @@ const CustomMap: React.FC<{
       container: mapContainer.current || "",
       style: MAP_STYLES[themeName],
     });
-    addMapController(new mapboxgl.NavigationControl(), "top-right");
+    // addMapController(new mapboxgl.NavigationControl(), "top-right");
     if (!isMapInitiated) setIsMapInitiated(true);
     return () => {
       removeMap();
