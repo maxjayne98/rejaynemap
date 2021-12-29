@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
 
-import { useAppDispatch } from "redux/hooks";
+import { useAppDispatch, useAppSelector } from "redux/hooks";
 import { Close, Settings } from "@styled-icons/evaicons-solid";
 import FloatingMenu from "components/Common/ToolBox/FloatingMenu";
 import { toggleColorPallet, toggleTheme } from "redux/theme/actions";
@@ -9,6 +9,7 @@ import {
   ColorPalleteItem,
   StylePickerContainer,
   ThemeItem,
+  GroupLabel,
 } from "components/HomePage/SettingsFloatingMenu/Element";
 import {
   dimTheme,
@@ -18,6 +19,7 @@ import {
   violetCollorPallet,
   blueCollorPallet,
 } from "assets/styles/theme";
+import { selectPalletName, selectThemeName } from "redux/theme/selector";
 interface Props {}
 
 const FloatingMenuIcons = (
@@ -31,7 +33,8 @@ const FloatingMenuIcons = (
 
 function SettingsFloatingMenu({}: Props): ReactElement {
   const dispatch = useAppDispatch();
-
+  const theme = useAppSelector(selectThemeName);
+  const color = useAppSelector(selectPalletName);
   const handleColorPalleteItemOnClick = (event: any) =>
     dispatch(toggleColorPallet(event.target.name));
 
@@ -41,53 +44,47 @@ function SettingsFloatingMenu({}: Props): ReactElement {
   return (
     <>
       <FloatingMenu icon={FloatingMenuIcons}>
-        <label>color pallete !!</label>
+        <GroupLabel>Color</GroupLabel>
         <StylePickerContainer>
           <ColorPalleteItem
             color={greenCollorPallet.primary}
-            isSelected={false}
+            isSelected={color === "green"}
             name="green"
             onClick={handleColorPalleteItemOnClick}
           />
           <ColorPalleteItem
             color={violetCollorPallet.primary}
-            isSelected={false}
+            isSelected={color === "violet"}
             name="violet"
             onClick={handleColorPalleteItemOnClick}
           />
           <ColorPalleteItem
             color={blueCollorPallet.primary}
-            isSelected={true}
+            isSelected={color === "blue"}
             name="blue"
             onClick={handleColorPalleteItemOnClick}
           />
         </StylePickerContainer>
-        <label>theme pallete !!</label>
+        <GroupLabel>Theme</GroupLabel>
         <StylePickerContainer>
           <ThemeItem
             bgColor={darkTheme.body}
             onClick={handleThemeItemOnClick}
-            isSelected={false}
+            isSelected={theme === "dark"}
             name="dark"
-          >
-            DARK
-          </ThemeItem>
+          ></ThemeItem>
           <ThemeItem
             bgColor={dimTheme.body}
             onClick={handleThemeItemOnClick}
-            isSelected={true}
+            isSelected={theme === "dim"}
             name="dim"
-          >
-            DIM
-          </ThemeItem>
+          ></ThemeItem>
           <ThemeItem
             bgColor={lightTheme.body}
             onClick={handleThemeItemOnClick}
-            isSelected={false}
+            isSelected={theme === "light"}
             name="light"
-          >
-            LIGHT
-          </ThemeItem>
+          ></ThemeItem>
         </StylePickerContainer>
       </FloatingMenu>
     </>
